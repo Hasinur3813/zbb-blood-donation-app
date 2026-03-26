@@ -10,7 +10,13 @@ import {
   Activity,
   ShieldCheck,
   Users,
+  Shield,
 } from "lucide-react";
+import DonorCard from "@/components/ui/DonorCard/DonorCard";
+import RequestCard from "@/components/ui/RequestCard/RequestCard";
+import HowItWorks from "@/components/HomePage/HowItWorks";
+import ImpactSection from "@/components/HomePage/ImpactSection";
+import CTA from "@/components/HomePage/CTA";
 
 export default function Home() {
   return (
@@ -34,11 +40,44 @@ export default function Home() {
                 <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 -z-10 -rotate-1"></span>
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto text-balance">
+            <p className="text-lg md:text-xl text-muted-foreground mb-4 max-w-2xl mx-auto text-balance">
               Vital Flow is a modern, editorial-inspired blood donation network.
               We connect local heroes with critical needs through a seamless,
               pulse-driven interface.
             </p>
+
+            {/* Trust Badges */}
+            <div className="flex justify-center items-center gap-6  mb-10">
+              {[
+                {
+                  icon: Shield,
+                  label: "Verified Donors",
+                  color: "text-blue-600",
+                  bg: "bg-blue-50",
+                },
+                {
+                  icon: Activity,
+                  label: "24/7 Support",
+                  color: "text-green-600",
+                  bg: "bg-green-50",
+                },
+                {
+                  icon: Heart,
+                  label: "Safe & Secure",
+                  color: "text-rose-600",
+                  bg: "bg-rose-50",
+                },
+              ].map((badge, idx) => (
+                <div key={idx} className="flex items-center justify-center">
+                  <div className={`${badge.bg} p-2 rounded-lg`}>
+                    <badge.icon className={`w-5 h-5 ${badge.color}`} />
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {badge.label}
+                  </span>
+                </div>
+              ))}
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -111,6 +150,10 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How it Works */}
+
+      <HowItWorks />
+
       {/* Emergency Request Highlight */}
       <section className="py-8 bg-red-50 border-y border-red-100">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -140,54 +183,128 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it Works */}
-      <section className="py-24 bg-white">
+      {/* Urgent Requests Section */}
+      <section className=" py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-4">How it Works</h2>
-            <p className="text-muted-foreground">
-              The donation process is simple, quick, and safe. Your single
-              donation can save up to three lives.
-            </p>
+          <div className=" flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div>
+              <h2 className="text-3xl font-extrabold text-slate-900 mb-2">
+                Emergency Requests
+              </h2>
+              <p className="text-slate-500 font-medium">
+                People needing your help right now in your city.
+              </p>
+            </div>
+            <a
+              href="#/requests"
+              className="text-red-600 font-bold flex items-center gap-2 hover:gap-3 transition-all"
+            >
+              View All Requests <ArrowRight className="w-5 h-5" />
+            </a>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative max-w-5xl mx-auto">
-            {/* Connection Line */}
-            <div className="hidden md:block absolute top-[40px] left-[15%] right-[15%] h-0.5 bg-slate-100 -z-10"></div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                icon: ShieldCheck,
-                title: "1. Register",
-                desc: "Create your profile with basic health details and your blood group.",
+                id: 1,
+                bloodGroup: "O+",
+                hospitalName: "Kushtia General Hospital",
+                city: "Kushtia",
+                description: "Patient requires immediate O+ blood for surgery.",
+                createdAt: "2026-03-20",
+                urgency: "CRITICAL",
               },
               {
-                icon: PhoneCall,
-                title: "2. Get Notified",
-                desc: "We'll contact you when there's an emergency or matched request nearby.",
+                id: 2,
+                bloodGroup: "A-",
+                hospitalName: "Dhaka Medical College",
+                city: "Dhaka",
+                description: "Blood needed for an accident patient in ICU.",
+                createdAt: "2026-03-22",
+                urgency: "HIGH",
               },
               {
-                icon: Heart,
-                title: "3. Donate Blood",
-                desc: "Visit the hospital or camp, donate blood, and save a precious life.",
+                id: 3,
+                bloodGroup: "B+",
+                hospitalName: "Rajshahi Hospital",
+                city: "Rajshahi",
+                description: "Scheduled transfusion for a patient with anemia.",
+                createdAt: "2026-03-18",
+                urgency: "NORMAL",
               },
-            ].map((step, i) => (
-              <div key={i} className="text-center group">
-                <div className="mx-auto w-20 h-20 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/5 group-hover:border-primary/20 transition-colors shadow-sm">
-                  <step.icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {step.desc}
-                </p>
+            ].map((req) => (
+              <RequestCard key={req.id} request={req} />
+            ))}
+          </div>
+        </div>
+      </section>
+      {/* Available donors */}
+      <section className="py-20 bg-slate-100">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div>
+              <div className="flex items-center gap-2 text-red-600 font-bold text-sm uppercase tracking-widest mb-3">
+                <Users className="w-4 h-4" /> Lifesavers in your community
               </div>
+              <h2 className="text-4xl font-black text-slate-900 mb-2">
+                Active Local Donors
+              </h2>
+              <p className="text-slate-500 font-medium max-w-lg">
+                Meet our verified donors who are ready to respond to
+                emergencies. Check their current eligibility and contact them
+                instantly.
+              </p>
+            </div>
+            <a
+              href="#/find-donor"
+              className="bg-white px-6 py-3 rounded-2xl border border-slate-200 text-slate-700 font-bold text-sm hover:border-red-600 hover:text-red-600 transition-all flex items-center gap-2"
+            >
+              Browse All Donors <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                id: 1,
+                name: "Hasinur Rahman",
+                bloodGroup: "O+",
+                city: "Kushtia",
+                lastDonatedAt: "2025-11-20",
+                totalDonations: 15,
+              },
+              {
+                id: 23,
+                name: "Sarah Ahmed",
+                bloodGroup: "A+",
+                city: "Dhaka",
+                lastDonatedAt: "2026-02-15",
+                totalDonations: 6,
+              },
+              {
+                id: 2,
+                name: "Rana Ahmed",
+                bloodGroup: "AB+",
+                city: "Pabna",
+                lastDonatedAt: "2026-02-10",
+                totalDonations: 20,
+              },
+              {
+                id: 3,
+                name: "Sonia Akter",
+                bloodGroup: "B-",
+                city: "Pabna",
+                lastDonatedAt: "2025-09-10",
+                totalDonations: 15,
+              },
+            ].map((donor) => (
+              <DonorCard key={donor.id} donor={donor} />
             ))}
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-slate-50">
+      {/* <section className="py-24 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">
@@ -245,7 +362,9 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
+      <ImpactSection />
+      <CTA />
     </div>
   );
 }
