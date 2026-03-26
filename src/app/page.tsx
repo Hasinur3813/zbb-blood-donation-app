@@ -1,65 +1,251 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  Search,
+  MapPin,
+  Droplet,
+  Heart,
+  Clock,
+  PhoneCall,
+  ArrowRight,
+  Activity,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-white pt-20 pb-28 md:pt-32 md:pb-40">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1615461066841-6116e61058f4?q=80&w=2600&auto=format&fit=crop')] bg-cover bg-center opacity-[0.1]"></div>
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-20 -left-20 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+              <Activity className="h-4 w-4" />
+              <span>Save lives today</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground mb-6 leading-tight text-balance">
+              Donate Blood, <br className="hidden md:block" />
+              <span className="text-primary relative">
+                Give the Gift of Life
+                <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 -z-10 -rotate-1"></span>
+              </span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto text-balance">
+              Vital Flow is a modern, editorial-inspired blood donation network.
+              We connect local heroes with critical needs through a seamless,
+              pulse-driven interface.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/register-donor"
+                className="w-full sm:w-auto px-8 py-3.5 bg-primary text-white rounded-lg font-semibold shadow-lg shadow-primary/30 hover:shadow-xl hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2"
+              >
+                <Heart className="h-5 w-5 fill-current" />
+                Become a Donor
+              </Link>
+              <Link
+                href="/request-blood"
+                className="w-full sm:w-auto px-8 py-3.5 bg-white text-foreground border border-border rounded-lg font-semibold hover:bg-slate-50 hover:-translate-y-0.5 transition-all text-center"
+              >
+                Request Blood
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Search Bar Section - overlapping with hero */}
+      <section className="relative z-20 -mt-16 mb-20">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-6 md:p-8 max-w-4xl mx-auto border border-slate-100">
+            <h2 className="text-xl font-bold mb-4 text-foreground flex items-center gap-2">
+              <Search className="h-5 w-5 text-primary" />
+              Find Blood Donors Nearby
+            </h2>
+            <form
+              className="flex flex-col md:flex-row gap-4"
+              action="/donors"
+              method="GET"
+            >
+              <div className="flex-1 relative">
+                <select
+                  name="group"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none font-medium h-12"
+                >
+                  <option value="">Any Blood Group</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+                <Droplet className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+              </div>
+
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="City or Location..."
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none placeholder:text-muted-foreground font-medium h-12"
+                />
+                <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+              </div>
+
+              <button
+                type="submit"
+                className="md:w-32 px-6 py-3 bg-foreground text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors h-12"
+              >
+                Search
+              </button>
+            </form>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Emergency Request Highlight */}
+      <section className="py-8 bg-red-50 border-y border-red-100">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative flex h-12 w-12 items-center justify-center shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-20"></span>
+              <div className="rounded-full bg-primary p-3 relative shadow-md shadow-red-200">
+                <Clock className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">
+                Emergency Requests
+              </h3>
+              <p className="text-sm text-slate-600">
+                3 urgent patients need B+ and O- blood in your city.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/donors?urgency=high"
+            className="shrink-0 flex items-center gap-2 text-primary font-semibold hover:text-red-700 transition-colors bg-white px-5 py-2.5 rounded-full border border-red-100 shadow-sm"
+          >
+            View Urgent Calls
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* How it Works */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold mb-4">How it Works</h2>
+            <p className="text-muted-foreground">
+              The donation process is simple, quick, and safe. Your single
+              donation can save up to three lives.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative max-w-5xl mx-auto">
+            {/* Connection Line */}
+            <div className="hidden md:block absolute top-[40px] left-[15%] right-[15%] h-0.5 bg-slate-100 -z-10"></div>
+
+            {[
+              {
+                icon: ShieldCheck,
+                title: "1. Register",
+                desc: "Create your profile with basic health details and your blood group.",
+              },
+              {
+                icon: PhoneCall,
+                title: "2. Get Notified",
+                desc: "We'll contact you when there's an emergency or matched request nearby.",
+              },
+              {
+                icon: Heart,
+                title: "3. Donate Blood",
+                desc: "Visit the hospital or camp, donate blood, and save a precious life.",
+              },
+            ].map((step, i) => (
+              <div key={i} className="text-center group">
+                <div className="mx-auto w-20 h-20 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/5 group-hover:border-primary/20 transition-colors shadow-sm">
+                  <step.icon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">
+              Real Heroes, Real Stories
+            </h2>
+            <p className="text-muted-foreground">
+              Hear from patients whose lives were saved by generous donors.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                name: "Sarah Jenkins",
+                role: "Patient Family",
+                text: "When my father needed emergency surgery, VitalFlow helped us find donors within hours. We are forever grateful.",
+              },
+              {
+                name: "Michael T.",
+                role: "Regular Donor",
+                text: "The process is incredibly smooth. I love getting updates when my blood is actually used to help someone. It's the best feeling.",
+              },
+              {
+                name: "Dr. Emily Chen",
+                role: "City Hospital",
+                text: "As a clinician, having a reliable platform to source specific blood groups during severe traumas is absolutely invaluable.",
+              },
+            ].map((t, i) => (
+              <div
+                key={i}
+                className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              >
+                <div className="flex text-amber-400 mb-4">
+                  {[...Array(5)].map((_, j) => (
+                    <svg
+                      key={j}
+                      className="w-5 h-5 fill-current"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                  ))}
+                </div>
+                <p className="text-slate-600 mb-6 italic">"{t.text}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm">{t.name}</h4>
+                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
