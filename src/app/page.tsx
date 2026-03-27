@@ -185,37 +185,55 @@ export default function Home() {
       </section>
 
       {/* Urgent Requests Section */}
-      <EmergencyRequests
+      {/* <EmergencyRequests
         requests={[
           {
             id: 1,
-            bloodGroup: "O+",
-            hospitalName: "Kushtia General Hospital",
-            city: "Kushtia",
-            description: "Patient requires immediate O+ blood for surgery.",
-            createdAt: "2026-03-20T10:00:00",
-            urgency: "CRITICAL",
+            name: "Sarah Jenkins",
+            avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+            verified: true,
+            role: "Doctor",
+            hospital: "St. Jude's Medical Center, Chicago",
+            bloodGroup: "O-",
+            urgency: "Emergency",
+            requiredBy: "Today, 4:00 PM",
+            units: 3,
+            createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+            message:
+              "Patient is undergoing emergency surgery after a severe accident. Universal O- donor blood is critically and desperately needed as soon as possible.",
           },
           {
             id: 2,
-            bloodGroup: "A-",
-            hospitalName: "Dhaka Medical College",
-            city: "Dhaka",
-            description: "Blood needed for an accident patient in ICU.",
-            createdAt: "2026-03-27T09:00:00",
-            urgency: "HIGH",
+            name: "Marcus Thorne",
+            avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+            verified: false,
+            role: "Patient Relative",
+            hospital: "Mercy General Hospital, Denver",
+            bloodGroup: "A+",
+            urgency: "Urgent",
+            requiredBy: "June 18, 2024",
+            units: 2,
+            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+            message:
+              "Requires blood for an upcoming cardiac operation. Please denote 'For Marcus Thorne' if you are available this week.",
           },
           {
             id: 3,
-            bloodGroup: "B+",
-            hospitalName: "Rajshahi Hospital",
-            city: "Rajshahi",
-            description: "Scheduled transfusion for a patient with anemia.",
-            createdAt: "2026-03-18T08:00:00",
-            urgency: "NORMAL",
+            name: "Elena Rossi",
+            avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+            verified: true,
+            role: "Nurse",
+            hospital: "Pacific Star Clinic, Seattle",
+            bloodGroup: "B-",
+            urgency: "Normal",
+            requiredBy: "June 21, 2024",
+            units: 1,
+            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+            message:
+              "Scheduled for ongoing anemia treatment. A single pint would greatly help replenish her reserves for the month.",
           },
         ]}
-      />
+      /> */}
       {/* Available donors */}
       <section className="py-20 bg-slate-100">
         <div className="container mx-auto px-4">

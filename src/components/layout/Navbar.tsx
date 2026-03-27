@@ -13,6 +13,7 @@ export function Navbar() {
     { name: "Request Blood", href: "/request-blood" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
+    { name: "Donate", href: "/donate" },
   ];
 
   return (
