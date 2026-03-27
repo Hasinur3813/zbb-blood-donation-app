@@ -12,6 +12,7 @@ export function Navbar() {
     { name: "Find Donors", href: "/donors" },
     { name: "Request Blood", href: "/request-blood" },
     { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (

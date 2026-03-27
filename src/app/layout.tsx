@@ -3,19 +3,28 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import "leaflet/dist/leaflet.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
     default: "VitalFlow | Blood Donation Platform",
-    template: "%s | VitalFlow"
+    template: "%s | VitalFlow",
   },
-  description: "Connect blood donors with those in need. Fast, reliable, and life-saving.",
-  keywords: ["blood donation", "donate blood", "healthcare", "emergency", "blood donor"],
+  description:
+    "Connect blood donors with those in need. Fast, reliable, and life-saving.",
+  keywords: [
+    "blood donation",
+    "donate blood",
+    "healthcare",
+    "emergency",
+    "blood donor",
+  ],
   openGraph: {
     title: "VitalFlow | Blood Donation Platform",
-    description: "Connect blood donors with those in need. Fast, reliable, and life-saving.",
+    description:
+      "Connect blood donors with those in need. Fast, reliable, and life-saving.",
     type: "website",
     locale: "en_US",
   },
@@ -23,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VitalFlow | Blood Donation Platform",
     description: "Connect blood donors with those in need.",
-  }
+  },
 };
 
 export default function RootLayout({
@@ -48,11 +57,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen bg-background flex flex-col`}>
+      <body
+        className={`${inter.className} min-h-screen bg-background flex flex-col`}
+      >
         <Navbar />
-        <main className="flex-1">
-          {children}
-        </main>
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>
