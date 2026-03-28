@@ -19,6 +19,7 @@ import {
   Clock,
   AlertTriangle,
 } from "lucide-react";
+import Image from "next/image";
 import { dummyDonor } from "@/data/dummyDonor";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -115,20 +116,22 @@ export default function UserDashboard() {
             <div className="flex items-center gap-4 mb-4">
               {/* Avatar */}
               <div className="relative shrink-0">
-                <img
+                <Image
                   src={donor.avatar}
                   alt={donor.name}
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-2xl object-cover"
                 />
                 <span className="absolute -top-1.5 -left-1.5 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow leading-tight">
                   {donor.bloodGroup}
                 </span>
                 {donor.verified ? (
-                  <span className="absolute -bottom-1 -right-1 w-[18px] h-[18px] bg-white rounded-full flex items-center justify-center ring-2 ring-white shadow">
+                  <span className="absolute -bottom-1 -right-1 w-4.5 h-4.5 bg-white rounded-full flex items-center justify-center ring-2 ring-white shadow">
                     <ShieldCheck className="w-3 h-3 text-rose-500" />
                   </span>
                 ) : (
-                  <span className="absolute -bottom-1 -right-1 w-[18px] h-[18px] bg-white rounded-full flex items-center justify-center ring-2 ring-white shadow">
+                  <span className="absolute -bottom-1 -right-1 w-4.5 h-4.5 bg-white rounded-full flex items-center justify-center ring-2 ring-white shadow">
                     <AlertTriangle className="w-3 h-3 text-amber-500" />
                   </span>
                 )}
@@ -187,9 +190,11 @@ export default function UserDashboard() {
           <div className="flex items-start gap-5">
             {/* Avatar */}
             <div className="relative shrink-0">
-              <img
+              <Image
                 src={donor.avatar}
                 alt={donor.name}
+                width={80}
+                height={80}
                 className="w-20 h-20 rounded-2xl object-cover"
               />
               <span className="absolute -top-2 -left-2 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-lg shadow leading-tight">

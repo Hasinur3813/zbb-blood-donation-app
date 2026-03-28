@@ -1,14 +1,12 @@
+/* eslint-disable react-hooks/purity */
 import Link from "next/link";
 import {
   Search,
   MapPin,
   Droplet,
   Heart,
-  Clock,
-  PhoneCall,
   ArrowRight,
   Activity,
-  ShieldCheck,
   Users,
   Shield,
 } from "lucide-react";
@@ -298,6 +296,19 @@ export default function Home() {
                 totalDonations: 4,
                 distance: 0.9,
                 isAvailable: false,
+              },
+              {
+                id: 1,
+                name: "Hasinur Rahman",
+                avatar: "https://randomuser.me/api/portraits/men/75.jpg",
+                verified: true,
+                bloodGroup: "O+",
+                city: "Kushtia",
+                lastDonatedAt: "2025-11-20",
+                totalDonations: 15,
+                phone: "+8801773061332",
+                distance: 1.2,
+                isAvailable: true, // ✅ manually set or derived
               },
             ].map((donor) => (
               <DonorCard key={donor.id} donor={donor} />

@@ -16,9 +16,9 @@ export default function CTA() {
             </h2>
 
             <p className="text-lg md:text-xl text-rose-100 max-w-2xl mx-auto">
-              Whether you want to donate or you're looking for help, we bridge
-              the gap between donors and patients. Join thousands making an
-              impact.
+              Whether you want to donate or you&apos;re looking for help, we
+              bridge the gap between donors and patients. Join thousands making
+              an impact.
             </p>
 
             {/* Buttons */}

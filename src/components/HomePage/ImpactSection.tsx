@@ -28,9 +28,9 @@ export default function ImpactSection() {
 
               {/* Text */}
               <p className="italic text-lg text-slate-700 leading-relaxed relative z-10">
-                "The platform helped us find a donor within 40 minutes for my
-                father’s surgery. I’ll forever be grateful for this life-saving
-                network."
+                &quot;The platform helped us find a donor within 40 minutes for
+                my father’s surgery. I’ll forever be grateful for this
+                life-saving network.&quot;
               </p>
 
               {/* User */}

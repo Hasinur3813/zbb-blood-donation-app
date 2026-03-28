@@ -91,7 +91,7 @@ export default function DonorMapSection() {
         </div>
 
         {/* Map */}
-        <div className="w-full md:w-1/2 h-[400px] md:h-[400px] relative">
+        <div className="w-full md:w-1/2 h-100 md:h-100 relative">
           {isClient && (
             <MapContainer
               center={[23.8103, 90.4125]}

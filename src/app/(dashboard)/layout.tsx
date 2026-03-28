@@ -1,16 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import {
-  Home,
-  Heart,
-  Droplet,
-  CalendarCheck,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-} from "lucide-react";
+import { Home, Droplet, Settings, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -37,6 +28,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: "Settings", icon: Settings, href: "/dashboard/settings" },
     { name: "Logout", icon: LogOut, href: "/dashboard/logout" },
   ];
+  const pathname = usePathname(); // current route
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
@@ -47,13 +39,21 @@ export default function Layout({ children }: LayoutProps) {
           lg:translate-x-0 lg:static lg:flex`}
       >
         <div className="flex flex-col gap-8">
-          {/* Logo / Brand */}
-          <div className="text-2xl font-bold text-primary">BloodApp</div>
+          {/* ── Logo ── */}
+          <Link href="/" className="flex items-center gap-2 shrink-0 group">
+            <div className="relative">
+              <Droplet className="h-7 w-7 text-rose-600 fill-rose-600 transition-transform group-hover:scale-110 duration-200" />
+              {/* Pulse dot */}
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-400 rounded-full border-2 border-white animate-pulse" />
+            </div>
+            <span className="text-xl font-extrabold tracking-tight text-gray-900">
+              Vital<span className="text-rose-600">Flow</span>
+            </span>
+          </Link>
 
           {/* Nav */}
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => {
-              const pathname = usePathname(); // current route
               const isActive = pathname === item.href;
 
               return (
@@ -74,7 +74,9 @@ export default function Layout({ children }: LayoutProps) {
         </div>
 
         {/* Footer / Version */}
-        <div className="text-xs text-gray-400">© 2026 BloodApp</div>
+        <div className="text-xs text-gray-400">
+          © {new Date().getFullYear()} VitalFlow
+        </div>
       </aside>
 
       {/* Mobile Toggle */}

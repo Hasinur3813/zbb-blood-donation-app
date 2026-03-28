@@ -14,7 +14,7 @@ export default function CTACard() {
         </svg>
       </div>
       <h3 className="text-2xl font-bold text-white mb-3 leading-tight">
-        Can't find a match?
+        Can&apos;t find a match?
       </h3>
       <p className="text-white/80 text-sm mb-6 leading-relaxed">
         Register as a universal donor to be notified the moment your blood type

@@ -1,3 +1,4 @@
+import { DevBanner } from "@/components/devBanner/DevBanner";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 
@@ -9,6 +10,7 @@ export default function MainLayout({
   return (
     <>
       <Navbar />
+      <DevBanner />
       {children}
       <Footer />
     </>

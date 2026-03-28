@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Search,
-  MapPin,
-  Filter,
-  User,
-  Calendar,
-  CheckCircle2,
-  Clock,
-} from "lucide-react";
+import { Search, MapPin, Filter } from "lucide-react";
 import DonorCard from "@/components/ui/DonorCard/DonorCard";
 
 // Mock Data

@@ -53,8 +53,9 @@ export default function RequestsPage() {
   );
 
   const handleFilterChange =
-    (setter: (v: any) => void) => (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setter(e.target.value);
+    <T extends string>(setter: React.Dispatch<React.SetStateAction<T>>) =>
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setter(e.target.value as T);
       setPage(1);
     };
 

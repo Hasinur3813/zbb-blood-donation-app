@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Heart, Eye, Activity, Ambulance, Users } from "lucide-react";
 import Button from "@/components/ui/Button/Button";
 
@@ -24,11 +25,12 @@ export default function About() {
           </p>
         </div>
         <div className="relative">
-          <div className="aspect-4/5 rounded-3xl overflow-hidden shadow-xl">
-            <img
-              className="w-full h-full object-cover"
+          <div className="aspect-4/5 rounded-3xl overflow-hidden shadow-xl relative">
+            <Image
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuASioqcR0nBxC3QGhwQaqLhPOrGeBc21YJUiP0x887M4puz7Jc-HNVctnRLNj3jwFFph6m-qv3AOVCaFfT8L6Zvlwb3Ni2kPs-h5nRaEbqRTeGlRO9lPetxb-Rgh1wnOSGfW1DAJhGnKrcT_KhObk1zBsAZZ0iJpc4T3YdjGgI7yREAHCRJS9IcpTleJBusxLlWlz5hfPlA2OY4IBWeoO3Wt9d0jcRse6klLK0UvPkBBVZMrUnZ1yztl0LdGqj-X8qbRKK5JWRabH8"
               alt="Artistic hand close-up"
+              fill
+              className="object-cover"
             />
           </div>
           <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-lg max-w-xs border border-gray-100">
@@ -53,7 +55,7 @@ export default function About() {
                 </h2>
                 <p className="text-base text-gray-500 leading-relaxed">
                   To democratize access to safe blood supplies by building the
-                  world's most intuitive, reliable, and community-driven
+                  world&apos;s most intuitive, reliable, and community-driven
                   donation network. We believe that every pulse matters and no
                   life should be lost due to a lack of supply.
                 </p>
@@ -122,18 +124,19 @@ export default function About() {
       <section className="bg-gray-50 py-20 overflow-hidden relative">
         <div className="max-w-4xl mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row gap-10 items-center">
-            <div className="w-24 h-24 rounded-full overflow-hidden shrink-0 border-4 border-white shadow-lg">
-              <img
-                className="w-full h-full object-cover"
+            <div className="w-24 h-24 rounded-full overflow-hidden shrink-0 border-4 border-white shadow-lg relative">
+              <Image
+                className="object-cover"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAr4tEDFj42CKDId_kdV8CTzlvWLIAwVxqhnXWuHs6L7j8z6mrvT2nipthn3xh44EiuhglfHit3jS3FXLUayZxbI6brhoMbwQp9wB3QO3-KmXojqUogn0hUWTmIJ_lMAEiPQjSLcniRZgxl23i9ExAYDFA284lj8ktgI3f10olPLibvZ6HcazCG2CgjBAObnkDX2R_qy9Jf5d43xnY_BPmhCAaCCz6r8DCLBwUU_lTw991xdMY3IChb9l2PI5GMt9yrBXbKn-ddpoU"
                 alt="Dr. Elena Rodriguez"
+                fill
               />
             </div>
             <div>
               <blockquote className="text-2xl md:text-3xl font-medium text-gray-800 leading-snug mb-5 italic">
-                "Vital Flow isn't just about technology; it's about the
-                heartbeat of our society. We're building a bridge made of
-                courage and kindness."
+                Vital Flow isn&apos;t just about technology; it&apos;s about the
+                heartbeat of our society. We&apos;re building a bridge made of
+                courage and kindness.
               </blockquote>
               <cite className="not-italic">
                 <span className="font-bold text-gray-900 block text-base">
@@ -147,7 +150,7 @@ export default function About() {
           </div>
         </div>
         <span className="absolute top-0 right-0 text-[18rem] font-black text-gray-900/4 select-none leading-none -translate-y-1/4 translate-x-1/4 pointer-events-none">
-          "
+          &quot;
         </span>
       </section>
 

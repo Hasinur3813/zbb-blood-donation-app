@@ -14,6 +14,7 @@ import {
   X,
   ExternalLink,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 type Donor = {
@@ -107,9 +108,11 @@ Please let me know if you can help🙏`,
             <div className="relative shrink-0">
               {donor.avatar ? (
                 <>
-                  <img
+                  <Image
                     src={donor.avatar}
                     alt={donor.name}
+                    width={56}
+                    height={56}
                     className="w-14 h-14 rounded-2xl object-cover"
                   />
                   {/* Blood group — always visible on top-left */}

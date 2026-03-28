@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import Button from "@/components/ui/Button/Button";
 
 // ── Schema ────────────────────────────────────────────────────────────────────
@@ -112,7 +113,7 @@ export default function Contact() {
 
             {isSubmitSuccessful && (
               <div className="mb-6 px-5 py-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm font-medium">
-                ✓ Message sent! We'll get back to you within 24 hours.
+                ✓ Message sent! We&apos;ll get back to you within 24 hours.
               </div>
             )}
 
@@ -210,10 +211,11 @@ export default function Contact() {
 
             {/* Map */}
             <div className="relative h-64 md:h-72 w-full rounded-3xl overflow-hidden group">
-              <img
+              <Image
                 className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 transition-all duration-700"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZguXrM7fxtKjv3cylJ_p1gzQVZeRrDeOGt-mm5X6HB35AmmZyEG2Tiig2ghtbtaesliJTyiNUFgh0SHrb7yFVLX8ANbbwhJ0HZyGmTsJLrOGx2ykKP3M5TKAIVOCSrk-KqFNe4pYuDhSe_F01fJL9tFwPm7m8L2sVDaBsK2Ofz_9Ev8ek7xDVZJ5-7z2dTKrT75gIC6u4mXcQdiFKGaj44qVjHCVT761RhzOslXHNj38Ipk14Xi8TnRkNmCjBXQGIaYbmwR5CQBw"
                 alt="Map of New York City"
+                fill
               />
               <div className="absolute inset-0 bg-rose-600/10 mix-blend-multiply pointer-events-none" />
               <div className="absolute bottom-5 left-5 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-md flex items-center gap-2">

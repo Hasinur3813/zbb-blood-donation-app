@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from "next/image";
 import Button from "@/components/ui/Button/Button";
 import { getTimeAgo } from "@/lib/timeAgo";
 import { Info, MapPin, ShieldCheck, UserCircle, X } from "lucide-react";
@@ -36,9 +37,11 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
           >
             <div className="relative">
               {request.avatar ? (
-                <img
+                <Image
                   src={request.avatar}
                   alt={request.name}
+                  width={36}
+                  height={36}
                   className="w-9 h-9 rounded-full object-cover"
                 />
               ) : (
@@ -48,7 +51,7 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
               )}
 
               {request.verified && (
-                <span className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-[2px] shadow">
+                <span className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-0.5 shadow">
                   <ShieldCheck className="w-3 h-3 text-rose-500" />
                 </span>
               )}
