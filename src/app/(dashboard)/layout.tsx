@@ -39,12 +39,12 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-white overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 bg-white w-64 p-6 flex flex-col justify-between border-r border-gray-200 transition-transform duration-300 z-50
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-          md:translate-x-0 md:static md:flex`}
+          lg:translate-x-0 lg:static lg:flex`}
       >
         <div className="flex flex-col gap-8">
           {/* Logo / Brand */}
@@ -78,7 +78,7 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Mobile Toggle */}
-      <div className="md:hidden fixed top-5 left-5 z-50">
+      <div className="lg:hidden fixed top-5 left-5 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-full bg-white shadow hover:bg-gray-100 transition"

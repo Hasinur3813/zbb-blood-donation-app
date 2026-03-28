@@ -29,10 +29,27 @@ export function Navbar() {
         </Link>
 
         {/* Nav */}
-        <nav className="hidden md:flex gap-6">
+        <nav className="hidden md:flex gap-6 justify-center items-center">
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href || pathname.startsWith(link.href + "/");
+
+            if (link.name === "Donate") {
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative inline-flex items-center gap-1.5 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 px-4 py-1.5 rounded-full transition-colors"
+                >
+                  {/* Pulse ring */}
+                  {/* <span className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-30" /> */}
+                  <span className="relative flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    {link.name}
+                  </span>
+                </Link>
+              );
+            }
 
             return (
               <Link
