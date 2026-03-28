@@ -20,7 +20,7 @@ export const dummyDonor: Donor = {
 
   // ── Availability
   isAvailable: true,
-  lastDonatedAt: "2024-08-24T10:30:00.000Z",
+  lastDonatedAt: "2025-02-24T10:30:00.000Z",
   nextEligibleAt: "2024-10-14T10:30:00.000Z",
 
   // ── Stats
@@ -116,7 +116,7 @@ export const dummyDonor: Donor = {
       showInSearch: true,
       showPhone: true,
       showEmail: true,
-      showDonationHistory: false,
+      showDonationHistory: true,
       allowDirectContact: true,
     },
   },
