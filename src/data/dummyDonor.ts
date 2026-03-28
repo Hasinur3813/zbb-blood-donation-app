@@ -8,7 +8,7 @@ export const dummyDonor: Donor = {
   avatar:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuBszC17M5Jb9qLVy1P9uX3a-wYsI5QltiNrE4jYs3m6y4Ce8mFO6yLTAtKI7qL61J0G2HmYMlVl_fsCcHrxbPst65aicIX9UAwAzhAr4rR00BjHdJZLyjEgCqUQbB1ufoPg7_ZCHOZHvWbMMAe3gFoik_YjFsOe2IxVKXV86vbL7O4m8WMMi6mG46W7U98o8IbmxA3VbARlySf9ynzVV-NYy9OMNveDGdFucVFAyr-9BwD697skNlxPVLsSTN6_B2ss2els9Snemy4",
   bloodGroup: "O-",
-  verified: false,
+  verified: true,
   status: "Super Hero",
 
   // ── Contact
@@ -99,4 +99,25 @@ export const dummyDonor: Donor = {
   age: 28,
   weight: 72,
   gender: "Male",
+
+  // ── Settings
+  settings: {
+    notifications: {
+      emergencyAlerts: false,
+      urgentRequests: true,
+      nearbyRequests: true,
+      donationReminders: true,
+      requestUpdates: true,
+      newMessages: true,
+      emailDigest: false,
+      smsAlerts: true,
+    },
+    privacy: {
+      showInSearch: true,
+      showPhone: true,
+      showEmail: true,
+      showDonationHistory: false,
+      allowDirectContact: true,
+    },
+  },
 };

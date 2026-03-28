@@ -23,17 +23,17 @@ export default function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { name: "Overview", icon: Home, href: "/dashboard" },
-    {
-      name: "Lives Impacted",
-      icon: Heart,
-      href: "/dashboard/lives-impacted",
-    },
+    // {
+    //   name: "Lives Impacted",
+    //   icon: Heart,
+    //   href: "/dashboard/lives-impacted",
+    // },
     { name: "Donations", icon: Droplet, href: "/dashboard/donations" },
-    {
-      name: "Eligibility",
-      icon: CalendarCheck,
-      href: "/dashboard/eligibility",
-    },
+    // {
+    //   name: "Eligibility",
+    //   icon: CalendarCheck,
+    //   href: "/dashboard/eligibility",
+    // },
     { name: "Settings", icon: Settings, href: "/dashboard/settings" },
     { name: "Logout", icon: LogOut, href: "/dashboard/logout" },
   ];
@@ -78,10 +78,10 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Mobile Toggle */}
-      <div className="lg:hidden fixed top-5 left-5 z-50">
+      <div className="lg:hidden fixed top-3 right-3 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-full bg-white shadow hover:bg-gray-100 transition"
+          className="p-2 rounded-full cursor-pointer bg-white shadow hover:bg-gray-100 transition"
         >
           {sidebarOpen ? (
             <X className="w-6 h-6" />
@@ -93,7 +93,9 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col ">
-        <div className="p-6 overflow-auto h-screen">{children}</div>
+        <div className="px-4 md:p-6 overflow-auto h-screen pt-6">
+          {children}
+        </div>
       </div>
     </div>
   );
