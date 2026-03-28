@@ -14,6 +14,7 @@ export function Navbar() {
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
     { name: "Donate", href: "/donate" },
+    { name: "Dashboard", href: "/dashboard" },
   ];
 
   return (

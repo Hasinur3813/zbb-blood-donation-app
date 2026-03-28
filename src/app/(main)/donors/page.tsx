@@ -17,10 +17,13 @@ export const MOCK_DONORS = [
   {
     id: 1,
     name: "Hasinur Rahman",
+    avatar: "https://randomuser.me/api/portraits/men/75.jpg",
+    verified: true,
     bloodGroup: "O+",
     city: "Kushtia",
     lastDonatedAt: "2025-11-20",
     totalDonations: 15,
+    phone: "+8801773061332",
     distance: 1.2,
     isAvailable: true, // ✅ manually set or derived
   },
@@ -29,7 +32,10 @@ export const MOCK_DONORS = [
     name: "Sarah Ahmed",
     bloodGroup: "A+",
     city: "Dhaka",
+    avatar: null,
+    verified: true,
     lastDonatedAt: "2026-02-15",
+    phone: "+8801773061332",
     totalDonations: 6,
     distance: 3.5,
     isAvailable: false,
@@ -39,7 +45,10 @@ export const MOCK_DONORS = [
     name: "Imran Hossain",
     bloodGroup: "B+",
     city: "Rajshahi",
+    avatar: null,
+    verified: false,
     lastDonatedAt: "2025-12-01",
+    phone: "+8801773061332",
     totalDonations: 9,
     distance: 5.8,
     isAvailable: true,
@@ -50,6 +59,9 @@ export const MOCK_DONORS = [
     bloodGroup: "AB-",
     city: "Khulna",
     lastDonatedAt: "2026-01-10",
+    avatar: null,
+    verified: true,
+    phone: "+8801773061332",
     totalDonations: 12,
     distance: 2.1,
     isAvailable: false,
@@ -60,6 +72,9 @@ export const MOCK_DONORS = [
     bloodGroup: "O-",
     city: "Jessore",
     lastDonatedAt: "2025-10-05",
+    avatar: null,
+    verified: false,
+    phone: "+8801773061332",
     totalDonations: 20,
     distance: 7.3,
     isAvailable: true,
@@ -70,6 +85,9 @@ export const MOCK_DONORS = [
     bloodGroup: "A-",
     city: "Barisal",
     lastDonatedAt: "2026-03-01",
+    avatar: null,
+    verified: true,
+    phone: "+8801773061332",
     totalDonations: 4,
     distance: 0.9,
     isAvailable: false,
@@ -215,7 +233,7 @@ export default function DonorsPage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-max gap-6">
                 {filteredDonors.map((donor) => (
                   // <div
                   //   key={donor.id}

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+
 import "leaflet/dist/leaflet.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,7 +34,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -60,9 +59,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} min-h-screen bg-background flex flex-col`}
       >
-        <Navbar />
         <main className="flex-1">{children}</main>
-        <Footer />
       </body>
     </html>
   );

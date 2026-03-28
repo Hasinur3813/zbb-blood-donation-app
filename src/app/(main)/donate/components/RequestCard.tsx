@@ -6,13 +6,7 @@ import { BloodRequest } from "../types";
 import { urgencyConfig } from "../data";
 import UrgencyBadge from "./UrgencyBadge";
 
-export default function RequestCard({
-  request,
-  onViewProfile,
-}: {
-  request: BloodRequest;
-  onViewProfile?: () => void;
-}) {
+export default function RequestCard({ request }: { request: BloodRequest }) {
   const [open, setOpen] = useState(false);
   const cfg = urgencyConfig[request.urgency];
 
@@ -36,7 +30,7 @@ export default function RequestCard({
 
           {/* Requester */}
           <button
-            onClick={onViewProfile}
+            // onClick={onViewProfile}
             title="View Profile"
             className="mt-4 flex items-center cursor-pointer w-full mb-5  gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 transition"
           >

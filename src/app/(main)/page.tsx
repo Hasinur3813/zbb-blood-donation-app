@@ -13,7 +13,6 @@ import {
   Shield,
 } from "lucide-react";
 import DonorCard from "@/components/ui/DonorCard/DonorCard";
-import RequestCard from "@/components/ui/RequestCard/RequestCard";
 import HowItWorks from "@/components/HomePage/HowItWorks";
 import ImpactSection from "@/components/HomePage/ImpactSection";
 import CTA from "@/components/HomePage/CTA";
@@ -156,7 +155,7 @@ export default function Home() {
       <HowItWorks />
 
       {/* Emergency Request Highlight */}
-      <section className="py-8 bg-red-50 border-y border-red-100">
+      {/* <section className="py-8 bg-red-50 border-y border-red-100">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="relative flex h-12 w-12 items-center justify-center shrink-0">
@@ -182,10 +181,10 @@ export default function Home() {
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-      </section>
+      </section> */}
 
       {/* Urgent Requests Section */}
-      {/* <EmergencyRequests
+      <EmergencyRequests
         requests={[
           {
             id: 1,
@@ -233,7 +232,7 @@ export default function Home() {
               "Scheduled for ongoing anemia treatment. A single pint would greatly help replenish her reserves for the month.",
           },
         ]}
-      /> */}
+      />
       {/* Available donors */}
       <section className="py-20 bg-slate-100">
         <div className="container mx-auto px-4">
@@ -262,36 +261,43 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                id: 1,
-                name: "Hasinur Rahman",
-                bloodGroup: "O+",
-                city: "Kushtia",
-                lastDonatedAt: "2025-11-20",
-                totalDonations: 15,
+                id: 4,
+                name: "Nusrat Jahan",
+                bloodGroup: "AB-",
+                city: "Khulna",
+                lastDonatedAt: "2026-01-10",
+                avatar: null,
+                verified: true,
+                phone: "+8801773061332",
+                totalDonations: 12,
+                distance: 2.1,
+                isAvailable: false,
               },
               {
-                id: 23,
-                name: "Sarah Ahmed",
-                bloodGroup: "A+",
-                city: "Dhaka",
-                lastDonatedAt: "2026-02-15",
-                totalDonations: 6,
-              },
-              {
-                id: 2,
-                name: "Rana Ahmed",
-                bloodGroup: "AB+",
-                city: "Pabna",
-                lastDonatedAt: "2026-02-10",
+                id: 5,
+                name: "Tanvir Hasan",
+                bloodGroup: "O-",
+                city: "Jessore",
+                lastDonatedAt: "2025-10-05",
+                avatar: null,
+                verified: false,
+                phone: "+8801773061332",
                 totalDonations: 20,
+                distance: 7.3,
+                isAvailable: true,
               },
               {
-                id: 3,
-                name: "Sonia Akter",
-                bloodGroup: "B-",
-                city: "Pabna",
-                lastDonatedAt: "2025-09-10",
-                totalDonations: 15,
+                id: 6,
+                name: "Fariha Sultana",
+                bloodGroup: "A-",
+                city: "Barisal",
+                lastDonatedAt: "2026-03-01",
+                avatar: null,
+                verified: true,
+                phone: "+8801773061332",
+                totalDonations: 4,
+                distance: 0.9,
+                isAvailable: false,
               },
             ].map((donor) => (
               <DonorCard key={donor.id} donor={donor} />

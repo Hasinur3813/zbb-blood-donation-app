@@ -137,13 +137,7 @@ export default function RequestsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {paginated.map((r) => (
-              <RequestCard
-                key={r.id}
-                request={r}
-                onViewProfile={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
+              <RequestCard key={r.id} request={r} />
             ))}
             {/* CTA card only on last page */}
             {page === totalPages && <CTACard />}

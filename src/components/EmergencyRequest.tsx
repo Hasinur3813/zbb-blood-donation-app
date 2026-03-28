@@ -1,6 +1,8 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
-import RequestCard from "@/app/donate/components/RequestCard";
-import { BloodRequest } from "@/app/donate/types";
+import RequestCard from "@/app/(main)/donate/components/RequestCard";
+import { BloodRequest } from "@/app/(main)/donate/types";
 
 interface Props {
   requests: BloodRequest[];
@@ -32,14 +34,7 @@ export default function EmergencyRequests({ requests }: Props) {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {requests.map((r) => (
-            <RequestCard
-              key={r.id}
-              request={r}
-              onViewDetails={() => setSelectedRequest(r)}
-              onViewProfile={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
+            <RequestCard key={r.id} request={r} />
           ))}
         </div>
       </div>
