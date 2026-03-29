@@ -16,6 +16,7 @@ import {
   Heart,
   Bell,
   Settings,
+  Activity,
 } from "lucide-react";
 
 type NavLink = {
@@ -253,6 +254,11 @@ export function Navbar() {
                             icon: Heart,
                             label: "My Donations",
                             href: "/dashboard/my-donations",
+                          },
+                          {
+                            icon: Activity,
+                            label: "Manage Requests",
+                            href: "/dashboard/manage-requests",
                           },
                           {
                             icon: Settings,
