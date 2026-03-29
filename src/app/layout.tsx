@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import "leaflet/dist/leaflet.css";
+import { Providers } from "@/providers/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -59,7 +60,9 @@ export default function MainLayout({
       <body
         className={`${inter.className} min-h-screen bg-background flex flex-col`}
       >
-        <main className="flex-1">{children}</main>
+        <Providers>
+          <main className="flex-1">{children}</main>
+        </Providers>
       </body>
     </html>
   );

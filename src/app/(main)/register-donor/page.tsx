@@ -10,14 +10,23 @@ import {
   HeartPulse,
   CheckCircle2,
   ShieldAlert,
+  Mail,
+  Lock,
 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import type { BloodGroup, Gender } from "@/types/donor";
 
 const registerDonorSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  gender: z.string().min(1, "Please select your gender"),
   bloodGroup: z.string().min(1, "Please select a blood group"),
   phone: z.string().min(10, "Valid phone number is required"),
-  location: z.string().min(3, "Please enter your city/location"),
+  city: z.string().min(2, "City is required"),
+  district: z.string().min(2, "District is required"),
+  country: z.string().min(2, "Country is required"),
   lastDonation: z.string().optional(),
   agreedToTerms: z
     .boolean()
@@ -28,6 +37,9 @@ type RegisterDonorFormValues = z.infer<typeof registerDonorSchema>;
 
 export default function RegisterDonorPage() {
   const [isRegistered, setIsRegistered] = useState(false);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+
+  const { register: registerAuth } = useAuth();
 
   const {
     register,
@@ -38,10 +50,30 @@ export default function RegisterDonorPage() {
   });
 
   const onSubmit = async (data: RegisterDonorFormValues) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Donor Registered:", data);
-    setIsRegistered(true);
+    try {
+      setRegisterError(null);
+      await registerAuth({
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        bloodGroup: data.bloodGroup as BloodGroup,
+        gender: data.gender as Gender,
+        city: data.city,
+        district: data.district,
+        country: data.country,
+      }).unwrap();
+      setIsRegistered(true);
+    } catch (error) {
+      if (typeof error === "string") {
+        setRegisterError(error);
+      } else {
+        const err = error as { data?: { message?: string }; message?: string };
+        setRegisterError(
+          err?.data?.message || err?.message || "Failed to register. Please try again."
+        );
+      }
+    }
   };
 
   return (
@@ -101,7 +133,7 @@ export default function RegisterDonorPage() {
 
       {/* Right Form Panel */}
       <div className="w-full lg:w-[60%] flex items-center justify-center p-6 md:p-12 overflow-y-auto z-10">
-        <div className="w-full max-w-lg bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-slate-100 relative">
+        <div className="w-full max-w-xl bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-slate-100 relative">
           {isRegistered ? (
             <div className="text-center py-8">
               <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -140,6 +172,13 @@ export default function RegisterDonorPage() {
                 </p>
               </div>
 
+              {registerError && (
+                <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 font-medium text-sm flex items-start gap-3">
+                  <ShieldAlert className="h-5 w-5 shrink-0" />
+                  <p>{registerError}</p>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -158,6 +197,68 @@ export default function RegisterDonorPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <input
+                        {...register("email")}
+                        type="email"
+                        className={`w-full px-4 py-3 pl-11 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 ${errors.email ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
+                        placeholder="you@example.com"
+                      />
+                      <Mail className="absolute left-4 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
+                    </div>
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1.5 font-medium">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        {...register("password")}
+                        type="password"
+                        className={`w-full px-4 py-3 pl-11 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 ${errors.password ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
+                        placeholder="••••••••"
+                      />
+                      <Lock className="absolute left-4 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
+                    </div>
+                    {errors.password && (
+                      <p className="text-red-500 text-sm mt-1.5 font-medium">
+                        {errors.password.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                      Gender
+                    </label>
+                    <select
+                      {...register("gender")}
+                      className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 appearance-none custom-select ${errors.gender ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    {errors.gender && (
+                      <p className="text-red-500 text-sm mt-1.5 font-medium">
+                        {errors.gender.message}
+                      </p>
+                    )}
+                  </div>
+
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                       Blood Group
@@ -182,7 +283,9 @@ export default function RegisterDonorPage() {
                       </p>
                     )}
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                       Phone Number
@@ -199,22 +302,57 @@ export default function RegisterDonorPage() {
                       </p>
                     )}
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                      City
+                    </label>
+                    <input
+                      {...register("city")}
+                      className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 ${errors.city ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
+                      placeholder="e.g. Dhaka"
+                    />
+                    {errors.city && (
+                      <p className="text-red-500 text-sm mt-1.5 font-medium">
+                        {errors.city.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                    City / Area
-                  </label>
-                  <input
-                    {...register("location")}
-                    className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 ${errors.location ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
-                    placeholder="e.g. Uttara, Dhaka"
-                  />
-                  {errors.location && (
-                    <p className="text-red-500 text-sm mt-1.5 font-medium">
-                      {errors.location.message}
-                    </p>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                      District
+                    </label>
+                    <input
+                      {...register("district")}
+                      className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 ${errors.district ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
+                      placeholder="e.g. Dhaka"
+                    />
+                    {errors.district && (
+                      <p className="text-red-500 text-sm mt-1.5 font-medium">
+                        {errors.district.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                      Country
+                    </label>
+                    <input
+                      {...register("country")}
+                      className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-slate-900 ${errors.country ? "border-red-500" : "border-slate-200 hover:border-slate-300"}`}
+                      placeholder="e.g. Bangladesh"
+                      defaultValue="Bangladesh"
+                    />
+                    {errors.country && (
+                      <p className="text-red-500 text-sm mt-1.5 font-medium">
+                        {errors.country.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div>

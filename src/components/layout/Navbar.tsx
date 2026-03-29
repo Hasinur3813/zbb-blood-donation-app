@@ -44,7 +44,7 @@ const MOCK_USER: SessionUser = {
 };
 
 /** Flip to `true` to preview the logged-in navbar with `MOCK_USER`. */
-const USE_MOCK_AUTH_USER = true;
+const USE_MOCK_AUTH_USER = false;
 
 const currentUser: SessionUser | null = USE_MOCK_AUTH_USER ? MOCK_USER : null;
 // ─────────────────────────────────────────────────────────────────────────────
