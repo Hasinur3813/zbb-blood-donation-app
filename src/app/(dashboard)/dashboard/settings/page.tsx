@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   Camera,
 } from "lucide-react";
+import Image from "next/image";
 import { dummyDonor } from "@/data/dummyDonor";
 
 type Tab = "profile" | "notifications" | "privacy" | "account";
@@ -116,9 +117,11 @@ function ProfileTab({ donor }: { donor: typeof dummyDonor }) {
       <Card title="Profile Photo">
         <div className="flex items-center gap-4">
           <div className="relative shrink-0">
-            <img
+            <Image
               src={donor.avatar}
               alt={donor.name}
+              width={56}
+              height={56}
               className="w-14 h-14 rounded-xl object-cover"
             />
             <span className="absolute -top-1.5 -left-1.5 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow leading-tight">
@@ -531,7 +534,7 @@ export default function SettingsPage() {
   const donor = dummyDonor;
 
   return (
-    <main className="pt-24 pb-20 container mx-auto w-full">
+    <main className="py-10 container mx-auto w-full">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl font-extrabold tracking-tight text-gray-900">

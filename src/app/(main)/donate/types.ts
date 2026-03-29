@@ -16,6 +16,8 @@ export interface BloodRequest {
   verified: boolean;
   role: string;
   hospital: string;
+  /** Coordinator / requester contact for WhatsApp & phone (demo). */
+  contactPhone: string;
   bloodGroup: BloodGroup;
   urgency: Urgency;
   requiredBy: string;

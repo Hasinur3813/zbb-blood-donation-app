@@ -60,6 +60,7 @@ export const REQUESTS: BloodRequest[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     message:
       "Patient is undergoing emergency surgery after a severe accident. Universal O- donor blood is critically and desperately needed as soon as possible.",
+    contactPhone: "+12025550199",
   },
   {
     id: 2,
@@ -75,6 +76,7 @@ export const REQUESTS: BloodRequest[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     message:
       "Requires blood for an upcoming cardiac operation. Please denote 'For Marcus Thorne' if you are available this week.",
+    contactPhone: "+13035550177",
   },
   {
     id: 3,
@@ -90,6 +92,7 @@ export const REQUESTS: BloodRequest[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     message:
       "Scheduled for ongoing anemia treatment. A single pint would greatly help replenish her reserves for the month.",
+    contactPhone: "+12065550188",
   },
   {
     id: 4,
@@ -105,6 +108,7 @@ export const REQUESTS: BloodRequest[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
     message:
       "Severe internal bleeding, multiple transfusions needed immediately! Any AB+ donor nearby please hurry.",
+    contactPhone: "+12125550144",
   },
   {
     id: 5,
@@ -120,5 +124,6 @@ export const REQUESTS: BloodRequest[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
     message:
       "Preparing for a complex organ transplant. O+ donors are warmly requested to assist with blood matching.",
+    contactPhone: "+15125550122",
   },
 ];

@@ -6,6 +6,7 @@ import { Info, MapPin, ShieldCheck, UserCircle, X } from "lucide-react";
 import { BloodRequest } from "../types";
 import { urgencyConfig } from "../data";
 import UrgencyBadge from "./UrgencyBadge";
+import Link from "next/link";
 
 export default function RequestCard({ request }: { request: BloodRequest }) {
   const [open, setOpen] = useState(false);
@@ -97,13 +98,15 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
 
         {/* ACTIONS */}
         <div className="flex gap-2 mt-auto">
-          <Button variant="primary" size="md" className="flex-1">
-            Donate Now
-          </Button>
+          <Link href={`/donate/${request.id}`} className="inline-block w-full">
+            <Button variant="primary" size="md" className="flex-1 w-full">
+              Donate Now
+            </Button>
+          </Link>
 
           <button
             onClick={() => setOpen(true)}
-            className="w-11 h-11 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+            className="w-11 h-11 rounded-xl cursor-pointer bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
           >
             <Info className="w-4 h-4 text-gray-500" />
           </button>
@@ -178,7 +181,14 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
             </div>
 
             {/* CTA */}
-            <Button className="w-full">Donate Now</Button>
+            <Link
+              href={`/donate/${request.id}`}
+              className="inline-block w-full"
+            >
+              <Button variant="primary" size="md" className="flex-1 w-full">
+                Donate Now
+              </Button>
+            </Link>
           </div>
         </div>
       )}

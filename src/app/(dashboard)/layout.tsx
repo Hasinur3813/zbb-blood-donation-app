@@ -1,7 +1,15 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { Home, Droplet, Settings, LogOut, Menu, X } from "lucide-react";
+import {
+  Home,
+  Droplet,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  Activity,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -19,7 +27,12 @@ export default function Layout({ children }: LayoutProps) {
     //   icon: Heart,
     //   href: "/dashboard/lives-impacted",
     // },
-    { name: "Donations", icon: Droplet, href: "/dashboard/donations" },
+    { name: "My Donations", icon: Droplet, href: "/dashboard/my-donations" },
+    {
+      name: "Manage Requests",
+      icon: Activity,
+      href: "/dashboard/manage-requests",
+    },
     // {
     //   name: "Eligibility",
     //   icon: CalendarCheck,

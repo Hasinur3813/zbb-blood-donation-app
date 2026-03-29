@@ -18,10 +18,10 @@ export const dummyDonor: Donor = {
   district: "Dhaka",
   country: "Bangladesh",
 
-  // ── Availability
+  // ── Availability (dates aligned: last whole-blood → +56d next eligible)
   isAvailable: true,
-  lastDonatedAt: "2025-02-24T10:30:00.000Z",
-  nextEligibleAt: "2024-10-14T10:30:00.000Z",
+  lastDonatedAt: "2025-11-01T10:30:00.000Z",
+  nextEligibleAt: "2025-12-27T10:30:00.000Z",
 
   // ── Stats
   totalDonations: 9,
