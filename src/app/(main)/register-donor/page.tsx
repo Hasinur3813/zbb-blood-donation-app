@@ -14,8 +14,10 @@ import {
   Lock,
 } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { registerUser } from "@/store/slices/authSlice";
 import type { BloodGroup, Gender } from "@/types/donor";
+// imports removed
 
 const registerDonorSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -37,42 +39,37 @@ type RegisterDonorFormValues = z.infer<typeof registerDonorSchema>;
 
 export default function RegisterDonorPage() {
   const [isRegistered, setIsRegistered] = useState(false);
-  const [registerError, setRegisterError] = useState<string | null>(null);
-
-  const { register: registerAuth } = useAuth();
+  const dispatch = useAppDispatch();
+  const { isLoading, error: authError } = useAppSelector((state) => state.auth);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<RegisterDonorFormValues>({
     resolver: zodResolver(registerDonorSchema),
   });
 
   const onSubmit = async (data: RegisterDonorFormValues) => {
-    try {
-      setRegisterError(null);
-      await registerAuth({
-        name: data.fullName,
-        email: data.email,
-        password: data.password,
-        phone: data.phone,
-        bloodGroup: data.bloodGroup as BloodGroup,
-        gender: data.gender as Gender,
-        city: data.city,
-        district: data.district,
-        country: data.country,
-      }).unwrap();
+    const payload = {
+      fullName: data.fullName,
+      email: data.email,
+      password: data.password,
+      phone: data.phone,
+      bloodGroup: data.bloodGroup as BloodGroup,
+      gender: data.gender as Gender,
+      city: data.city,
+      district: data.district,
+      country: data.country,
+      lastDonation: data.lastDonation ? new Date(data.lastDonation) : null,
+      agreedToTerms: data.agreedToTerms,
+    };
+
+    const resultAction = await dispatch(registerUser(payload));
+
+    if (registerUser.fulfilled.match(resultAction)) {
       setIsRegistered(true);
-    } catch (error) {
-      if (typeof error === "string") {
-        setRegisterError(error);
-      } else {
-        const err = error as { data?: { message?: string }; message?: string };
-        setRegisterError(
-          err?.data?.message || err?.message || "Failed to register. Please try again."
-        );
-      }
+      // Let the user see the success screen, or redirect.
     }
   };
 
@@ -172,10 +169,10 @@ export default function RegisterDonorPage() {
                 </p>
               </div>
 
-              {registerError && (
+              {authError && (
                 <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 font-medium text-sm flex items-start gap-3">
                   <ShieldAlert className="h-5 w-5 shrink-0" />
-                  <p>{registerError}</p>
+                  <p>{authError}</p>
                 </div>
               )}
 
@@ -423,10 +420,10 @@ export default function RegisterDonorPage() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                   className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:bg-black transition-all hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg mt-4"
                 >
-                  {isSubmitting ? (
+                  {isLoading ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       Registering...

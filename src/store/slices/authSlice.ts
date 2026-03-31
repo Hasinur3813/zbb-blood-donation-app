@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import apiClient from "@/lib/apiClient";
 import type {
@@ -14,7 +18,10 @@ import type {
 
 const isBrowser = typeof window !== "undefined";
 
-function loadTokens(): { accessToken: string | null; refreshToken: string | null } {
+function loadTokens(): {
+  accessToken: string | null;
+  refreshToken: string | null;
+} {
   if (!isBrowser) return { accessToken: null, refreshToken: null };
   return {
     accessToken: localStorage.getItem("accessToken"),
@@ -49,40 +56,71 @@ function getErrorMessage(error: unknown, fallback: string): string {
 
 const tokens = loadTokens();
 
-const initialState: AuthState = {
+const initialState: AuthState & {
+  passwordResetEmailSent: boolean;
+  passwordResetSuccessful: boolean;
+  resetMessage: string | null;
+} = {
   user: null,
   accessToken: tokens.accessToken,
   refreshToken: tokens.refreshToken,
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  passwordResetEmailSent: false,
+  passwordResetSuccessful: false,
+  resetMessage: null,
 };
 
 // ── Async thunks ──────────────────────────────────────────────────────────────
 
-export const loginUser = createAsyncThunk<AuthResponse, LoginRequest, { rejectValue: string }>(
-  "auth/login",
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const { data } = await apiClient.post<AuthResponse>("/auth/login", credentials);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error, "Login failed. Please check your credentials."));
-    }
-  }
-);
+export const loginUser = createAsyncThunk<
+  AuthResponse,
+  LoginRequest,
+  { rejectValue: string }
+>("auth/login", async (credentials, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+      data: AuthResponse;
+    }>("/auth/login", credentials);
 
-export const registerUser = createAsyncThunk<AuthResponse, RegisterRequest, { rejectValue: string }>(
-  "auth/register",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const { data } = await apiClient.post<AuthResponse>("/auth/register", userData);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error, "Registration failed. Please try again."));
+    if (!response.data.success) {
+      return rejectWithValue(response.data.message || "Login failed.");
     }
+
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(
+      getErrorMessage(error, "Login failed. Please check your credentials."),
+    );
   }
-);
+});
+
+export const registerUser = createAsyncThunk<
+  AuthResponse,
+  RegisterRequest,
+  { rejectValue: string }
+>("auth/register", async (userData, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+      data: AuthResponse;
+    }>("/auth/register", userData);
+
+    if (!response.data.success) {
+      return rejectWithValue(response.data.message || "Registration failed.");
+    }
+
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(
+      getErrorMessage(error, "Registration failed. Please try again."),
+    );
+  }
+});
 
 export const refreshAccessToken = createAsyncThunk<
   RefreshTokenResponse,
@@ -94,24 +132,99 @@ export const refreshAccessToken = createAsyncThunk<
   if (!refreshToken) return rejectWithValue("No refresh token available.");
 
   try {
-    const { data } = await apiClient.post<RefreshTokenResponse>("/auth/refresh", { refreshToken });
+    const { data } = await apiClient.post<RefreshTokenResponse>(
+      "/auth/refresh",
+      { refreshToken },
+    );
     return data;
   } catch (error) {
-    return rejectWithValue(getErrorMessage(error, "Session expired. Please log in again."));
+    return rejectWithValue(
+      getErrorMessage(error, "Session expired. Please log in again."),
+    );
   }
 });
 
-export const fetchCurrentUser = createAsyncThunk<AuthUser, void, { rejectValue: string }>(
-  "auth/fetchCurrentUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await apiClient.get<AuthUser>("/auth/me");
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error, "Failed to fetch user info."));
+export const fetchCurrentUser = createAsyncThunk<
+  AuthUser,
+  void,
+  { rejectValue: string }
+>("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.get<{
+      success: boolean;
+      message: string;
+      data: AuthUser;
+    }>("/auth/me");
+
+    if (!response.data.success) {
+      return rejectWithValue(
+        response.data.message || "Failed to fetch user info.",
+      );
     }
+
+    return response.data.data;
+  } catch (error) {
+    return rejectWithValue(
+      getErrorMessage(error, "Failed to fetch user info."),
+    );
   }
-);
+});
+
+export const requestPasswordReset = createAsyncThunk<
+  { message: string; resetToken?: string },
+  { email: string },
+  { rejectValue: string }
+>("auth/requestPasswordReset", async ({ email }, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+      data: {
+        resetToken?: string;
+      } | null;
+    }>("/auth/forgot-password", { email });
+
+    if (!response.data.success) {
+      return rejectWithValue(
+        response.data.message || "Password reset request failed.",
+      );
+    }
+
+    return {
+      message: response.data.message,
+      resetToken: response.data.data?.resetToken,
+    };
+  } catch (error) {
+    return rejectWithValue(
+      getErrorMessage(error, "Password reset request failed."),
+    );
+  }
+});
+
+export const resetPassword = createAsyncThunk<
+  { message: string },
+  { token: string; password: string },
+  { rejectValue: string }
+>("auth/resetPassword", async ({ token, password }, { rejectWithValue }) => {
+  try {
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+      data?: null;
+    }>("/auth/reset-password", {
+      token,
+      password,
+    });
+
+    if (!response.data.success) {
+      return rejectWithValue(response.data.message || "Password reset failed.");
+    }
+
+    return { message: response.data.message };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Password reset failed."));
+  }
+});
 
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
@@ -128,6 +241,12 @@ const authSlice = createSlice({
       clearTokens();
     },
     clearAuthError(state) {
+      state.error = null;
+    },
+    clearPasswordResetState(state) {
+      state.passwordResetEmailSent = false;
+      state.passwordResetSuccessful = false;
+      state.resetMessage = null;
       state.error = null;
     },
     setCredentials(state, action: PayloadAction<AuthResponse>) {
@@ -207,8 +326,48 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload ?? "Failed to fetch user.";
       });
+
+    // ── Password reset request ──
+    builder
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.passwordResetEmailSent = false;
+        state.resetMessage = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.passwordResetEmailSent = true;
+        state.resetMessage = action.payload.message;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Password reset request failed.";
+      });
+
+    // ── Password reset confirm ──
+    builder
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.passwordResetSuccessful = false;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.passwordResetSuccessful = true;
+        state.resetMessage = action.payload.message;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload ?? "Password reset failed.";
+      });
   },
 });
 
-export const { logout, clearAuthError, setCredentials } = authSlice.actions;
+export const {
+  logout,
+  clearAuthError,
+  clearPasswordResetState,
+  setCredentials,
+} = authSlice.actions;
 export default authSlice.reducer;

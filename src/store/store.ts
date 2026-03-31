@@ -1,16 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook,
+} from "react-redux";
 
 import authReducer from "./slices/authSlice";
+import donorsReducer from "./slices/donorsSlice";
+import requestsReducer from "./slices/requestsSlice";
 
 // ── Store ─────────────────────────────────────────────────────────────────────
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    // Add more slices here as the app grows, e.g.:
-    // donors: donorsReducer,
-    // requests: requestsReducer,
+    donors: donorsReducer,
+    requests: requestsReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });

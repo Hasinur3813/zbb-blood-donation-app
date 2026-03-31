@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { loginUser } from "@/store/slices/authSlice";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HeartPulse, ArrowRight, Lock, Mail } from "lucide-react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
@@ -16,7 +17,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isLoading, error: authError } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
   const {
@@ -27,12 +29,23 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Login User:", data);
-    // Redirect to dashboard normally
-    router.push("/dashboard/user");
+  const onSubmit = async (
+    data: LoginFormValues,
+    e?: React.BaseSyntheticEvent,
+  ) => {
+    e?.preventDefault();
+
+    try {
+      const resultAction = await dispatch(
+        loginUser({ email: data.email, password: data.password }),
+      );
+
+      if (loginUser.fulfilled.match(resultAction)) {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -53,7 +66,18 @@ export default function LoginPage() {
         <div className="bg-white py-10 px-6 sm:px-10 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-primary/50 via-primary to-primary/80"></div>
 
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(onSubmit)(e);
+            }}
+          >
+            {authError && (
+              <p className="text-red-500 text-sm font-medium text-center">
+                {authError}
+              </p>
+            )}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Email address
@@ -80,7 +104,7 @@ export default function LoginPage() {
                   Password
                 </label>
                 <Link
-                  href="#"
+                  href="/forgot-password"
                   className="text-sm font-semibold text-primary hover:underline"
                 >
                   Forgot password?
@@ -104,10 +128,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isLoading}
               className="w-full py-3.5 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:bg-black transition-all hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-base mt-2"
             >
-              {isSubmitting ? (
+              {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   Signing in...

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   MapPin,
   Search,
@@ -11,53 +12,115 @@ import {
 } from "lucide-react";
 import Button from "@/components/ui/Button/Button";
 import { getTimeAgo } from "@/lib/timeAgo";
+import toast from "react-hot-toast";
 
 import RequestCard from "./components/RequestCard";
 import CTACard from "./components/CTACard";
 import UrgencyBadge from "./components/UrgencyBadge";
 import { BloodGroup, BloodRequest, Urgency } from "./types";
+import { BLOOD_GROUPS, ITEMS_PER_PAGE, URGENCIES, urgencyConfig } from "./data";
+import { AppDispatch, RootState } from "@/store/store";
 import {
-  BLOOD_GROUPS,
-  ITEMS_PER_PAGE,
-  REQUESTS,
-  URGENCIES,
-  urgencyConfig,
-} from "./data";
+  fetchRequests,
+  fetchRequest,
+  clearError,
+  clearCurrentRequest,
+  setPage,
+} from "@/store/slices/requestsSlice";
 
 export default function RequestsPage() {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    requests,
+    loading,
+    error,
+    totalPages,
+    currentPage,
+    // totalRequests,
+    currentRequest,
+  } = useSelector((state: RootState) => state.requests);
+
   const [search, setSearch] = useState("");
   const [bloodFilter, setBloodFilter] = useState<BloodGroup | "">("");
   const [urgencyFilter, setUrgencyFilter] = useState<Urgency | "">("");
-  const [page, setPage] = useState(1);
   const [selectedRequest, setSelectedRequest] = useState<BloodRequest | null>(
     null,
   );
 
-  const filtered = useMemo(() => {
-    return REQUESTS.filter((r) => {
+  // Fetch requests from backend whenever page or filters change
+  useEffect(() => {
+    const params: {
+      page?: number;
+      limit?: number;
+      bloodGroup?: string;
+      urgencyLevel?: string;
+      status?: string;
+    } = {
+      page: currentPage,
+      limit: ITEMS_PER_PAGE,
+      status: "pending",
+    };
+
+    if (bloodFilter) params.bloodGroup = bloodFilter;
+    if (urgencyFilter) params.urgencyLevel = urgencyFilter.toLowerCase();
+
+    dispatch(fetchRequests(params))
+      .unwrap()
+      .catch((err) => {
+        const message =
+          typeof err === "string" ? err : "Failed to load blood requests";
+        toast.error(message);
+      });
+  }, [dispatch, currentPage, bloodFilter, urgencyFilter]);
+
+  // Show and clear global errors from store
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
+
+  // Filter requests based on search and filters
+  const filteredRequests = useMemo(() => {
+    return requests.filter((r) => {
       const q = search.toLowerCase();
       const matchesSearch =
         !q ||
-        r.name.toLowerCase().includes(q) ||
-        r.hospital.toLowerCase().includes(q);
-      const matchesBlood = !bloodFilter || r.bloodGroup === bloodFilter;
-      const matchesUrgency = !urgencyFilter || r.urgency === urgencyFilter;
+        r.patientName.toLowerCase().includes(q) ||
+        r.hospital.toLowerCase().includes(q) ||
+        r.requesterName.toLowerCase().includes(q);
+      const matchesBlood =
+        !bloodFilter || (r.bloodGroup as BloodGroup) === bloodFilter;
+      const matchesUrgency =
+        !urgencyFilter || r.urgencyLevel === urgencyFilter.toLowerCase();
       return matchesSearch && matchesBlood && matchesUrgency;
     });
-  }, [search, bloodFilter, urgencyFilter]);
+  }, [requests, search, bloodFilter, urgencyFilter]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const paginated = filtered.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE,
-  );
+  // Paginate filtered results
+  const paginatedRequests = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredRequests.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredRequests, currentPage]);
 
   const handleFilterChange =
     <T extends string>(setter: React.Dispatch<React.SetStateAction<T>>) =>
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setter(e.target.value as T);
-      setPage(1);
+      dispatch(setPage(1));
     };
+
+  const handleViewRequest = (request: BloodRequest) => {
+    setSelectedRequest(request);
+    dispatch(fetchRequest(request._id))
+      .unwrap()
+      .catch((err) => {
+        const message =
+          typeof err === "string" ? err : "Failed to load request details";
+        toast.error(message);
+      });
+  };
 
   const selectClass =
     "w-full appearance-none bg-white border border-gray-200 rounded-2xl py-3.5 px-4 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-200 transition-all";
@@ -84,10 +147,7 @@ export default function RequestsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <input
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-white border border-gray-200 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-200 transition-all"
               placeholder="Search by hospital, city or patient name…"
               type="text"
@@ -118,7 +178,9 @@ export default function RequestsPage() {
             >
               <option value="">Any Urgency</option>
               {URGENCIES.map((u) => (
-                <option key={u}>{u}</option>
+                <option key={u} value={u}>
+                  {u}
+                </option>
               ))}
             </select>
             <ChevronLeft className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none -rotate-90" />
@@ -126,7 +188,12 @@ export default function RequestsPage() {
         </section>
 
         {/* Grid */}
-        {paginated.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-24">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-rose-600"></div>
+            <p className="text-gray-400 mt-4">Loading requests...</p>
+          </div>
+        ) : paginatedRequests.length === 0 ? (
           <div className="text-center py-24 text-gray-400">
             <p className="text-lg font-semibold">
               No requests match your filters.
@@ -137,11 +204,15 @@ export default function RequestsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {paginated.map((r) => (
-              <RequestCard key={r.id} request={r} />
+            {paginatedRequests.map((r) => (
+              <RequestCard
+                key={r._id}
+                request={r as BloodRequest}
+                onViewDetails={() => handleViewRequest(r as BloodRequest)}
+              />
             ))}
             {/* CTA card only on last page */}
-            {page === totalPages && <CTACard />}
+            {currentPage === totalPages && <CTACard />}
           </div>
         )}
 
@@ -149,26 +220,39 @@ export default function RequestsPage() {
         <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-gray-100 pt-10">
           <p className="text-gray-400 text-sm font-medium">
             Showing{" "}
-            <span className="text-gray-900 font-bold">{filtered.length}</span>{" "}
-            of <span className="text-gray-900 font-bold">24</span> active
-            requests
+            <span className="text-gray-900 font-bold">
+              {paginatedRequests.length}
+            </span>{" "}
+            of{" "}
+            <span className="text-gray-900 font-bold">
+              {filteredRequests.length}
+            </span>{" "}
+            active requests
           </p>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
+              onClick={() => dispatch(setPage(Math.max(1, currentPage - 1)))}
+              disabled={currentPage === 1 || loading}
               aria-label="Previous page"
               className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            {Array.from(
+              {
+                length:
+                  totalPages ||
+                  Math.ceil(filteredRequests.length / ITEMS_PER_PAGE),
+              },
+              (_, i) => i + 1,
+            ).map((p) => (
               <button
                 key={p}
-                onClick={() => setPage(p)}
+                onClick={() => dispatch(setPage(p))}
+                disabled={loading}
                 className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-bold transition-colors ${
-                  p === page
+                  p === currentPage
                     ? "bg-rose-600 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
@@ -178,8 +262,23 @@ export default function RequestsPage() {
             ))}
 
             <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
+              onClick={() =>
+                dispatch(
+                  setPage(
+                    Math.min(
+                      totalPages ||
+                        Math.ceil(filteredRequests.length / ITEMS_PER_PAGE),
+                      currentPage + 1,
+                    ),
+                  ),
+                )
+              }
+              disabled={
+                currentPage ===
+                  (totalPages ||
+                    Math.ceil(filteredRequests.length / ITEMS_PER_PAGE)) ||
+                loading
+              }
               aria-label="Next page"
               className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
@@ -200,19 +299,25 @@ export default function RequestsPage() {
       </div>
 
       {/* Modal */}
-      {selectedRequest && (
+      {selectedRequest && currentRequest && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           {/* Overlay */}
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setSelectedRequest(null)}
+            onClick={() => {
+              setSelectedRequest(null);
+              dispatch(clearCurrentRequest());
+            }}
           />
 
           {/* Modal */}
           <div className="relative w-full max-w-md bg-white rounded-3xl p-6 md:p-7 shadow-xl flex flex-col gap-6 animate-in fade-in">
             {/* Close */}
             <button
-              onClick={() => setSelectedRequest(null)}
+              onClick={() => {
+                setSelectedRequest(null);
+                dispatch(clearCurrentRequest());
+              }}
               className="absolute top-4 right-4 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
             >
               <X className="w-4 h-4 text-gray-500" />
@@ -221,62 +326,112 @@ export default function RequestsPage() {
             {/* Header */}
             <div className="flex items-start gap-4 pr-10">
               <div
-                className={`w-12 h-12 rounded-xl ${urgencyConfig[selectedRequest.urgency].blood} flex items-center justify-center shrink-0`}
+                className={`w-12 h-12 rounded-xl ${urgencyConfig[currentRequest.urgencyLevel].blood} flex items-center justify-center shrink-0`}
               >
                 <span
-                  className={`text-lg font-extrabold ${urgencyConfig[selectedRequest.urgency].bloodText}`}
+                  className={`text-lg font-extrabold ${urgencyConfig[currentRequest.urgencyLevel].bloodText}`}
                 >
-                  {selectedRequest.bloodGroup}
+                  {currentRequest.bloodGroup}
                 </span>
               </div>
 
               <div className="flex-1">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  Blood Request
+                  Blood Request #{currentRequest.requestNumber}
                 </h2>
 
                 <div className="flex items-center gap-1.5 text-gray-400 mt-1">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span className="text-sm">{selectedRequest.hospital}</span>
+                  <span className="text-sm">
+                    {currentRequest.hospital}, {currentRequest.district}
+                  </span>
                 </div>
               </div>
 
               {/* Urgency */}
-              <UrgencyBadge urgency={selectedRequest.urgency} />
+              <UrgencyBadge urgency={currentRequest.urgencyLevel as Urgency} />
             </div>
 
-            {/* Message (clean focus) */}
+            {/* Patient Info */}
             <div>
               <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                Message
+                Patient Information
               </p>
-              <p className="text-gray-800 leading-relaxed text-sm">
-                {selectedRequest.message}
-              </p>
+              <div className="space-y-1">
+                <p className="text-gray-800 font-medium">
+                  {currentRequest.patientName}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  {currentRequest.patientAge} years old •{" "}
+                  {currentRequest.patientGender} •{" "}
+                  {currentRequest.patientCondition}
+                </p>
+              </div>
             </div>
+
+            {/* Message (special instructions) */}
+            {currentRequest.specialInstructions && (
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                  Special Instructions
+                </p>
+                <p className="text-gray-800 leading-relaxed text-sm">
+                  {currentRequest.specialInstructions}
+                </p>
+              </div>
+            )}
 
             {/* Info grid */}
             <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
               <div>
                 <p className="text-gray-400 text-xs uppercase">Posted</p>
                 <p className="font-semibold text-gray-900">
-                  {getTimeAgo(selectedRequest.createdAt)}
+                  {getTimeAgo(currentRequest.createdAt)}
                 </p>
               </div>
 
               <div>
-                <p className="text-gray-400 text-xs uppercase">Required</p>
+                <p className="text-gray-400 text-xs uppercase">Required By</p>
                 <p className="font-semibold text-gray-900">
-                  {selectedRequest.requiredBy}
+                  {new Date(currentRequest.requiredBy).toLocaleDateString()}
+                  {currentRequest.requiredByTime &&
+                    ` ${currentRequest.requiredByTime}`}
                 </p>
               </div>
 
               <div>
                 <p className="text-gray-400 text-xs uppercase">Units</p>
                 <p className="font-semibold text-gray-900">
-                  {selectedRequest.units}{" "}
-                  {selectedRequest.units === 1 ? "Pint" : "Pints"}
+                  {currentRequest.unitsRequired}{" "}
+                  {currentRequest.unitsRequired === 1 ? "Unit" : "Units"}
                 </p>
+              </div>
+
+              <div>
+                <p className="text-gray-400 text-xs uppercase">Component</p>
+                <p className="font-semibold text-gray-900">
+                  {currentRequest.componentType.replace("_", " ").toUpperCase()}
+                </p>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <p className="text-xs font-semibold text-gray-400 uppercase mb-2">
+                Contact Information
+              </p>
+              <div className="space-y-1">
+                <p className="text-gray-800 font-medium">
+                  {currentRequest.requesterName}
+                </p>
+                <p className="text-gray-600 text-sm">
+                  {currentRequest.relation} • {currentRequest.contactPhone}
+                </p>
+                {currentRequest.contactEmail && (
+                  <p className="text-gray-600 text-sm">
+                    {currentRequest.contactEmail}
+                  </p>
+                )}
               </div>
             </div>
 

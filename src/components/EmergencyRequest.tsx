@@ -34,7 +34,7 @@ export default function EmergencyRequests({ requests }: Props) {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {requests.map((r) => (
-            <RequestCard key={r.id} request={r} />
+            <RequestCard key={r._id} request={r} />
           ))}
         </div>
       </div>

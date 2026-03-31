@@ -4,7 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { logout } from "@/store/slices/authSlice";
 import type { LucideIcon } from "lucide-react";
+import type { BloodGroup } from "@/types/donor";
 import {
   Droplet,
   Menu,
@@ -28,26 +31,10 @@ type NavLink = {
 type SessionUser = {
   name: string;
   email: string;
-  bloodGroup: string;
-  /** Remote image URL, or `null` for initials fallback */
-  avatar: string | null;
+  bloodGroup: BloodGroup;
+  avatar: string;
   notifications: number;
 };
-
-// ─── Mock auth state (replace with your real auth) ───────────────────────────
-const MOCK_USER: SessionUser = {
-  name: "Arif Hossain",
-  email: "arif@example.com",
-  bloodGroup: "B+",
-  avatar: null,
-  notifications: 3,
-};
-
-/** Flip to `true` to preview the logged-in navbar with `MOCK_USER`. */
-const USE_MOCK_AUTH_USER = false;
-
-const currentUser: SessionUser | null = USE_MOCK_AUTH_USER ? MOCK_USER : null;
-// ─────────────────────────────────────────────────────────────────────────────
 
 const publicNavLinks: NavLink[] = [
   { name: "Home", href: "/" },
@@ -70,6 +57,18 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
+  const sessionUser = useAppSelector((state) => state.auth.user);
+
+  const currentUser: SessionUser | null = sessionUser
+    ? {
+        name: sessionUser.name,
+        email: sessionUser.email,
+        avatar: sessionUser.avatar,
+        bloodGroup: sessionUser.bloodGroup,
+        notifications: 0,
+      }
+    : null;
 
   const navLinks = currentUser ? authNavLinks : publicNavLinks;
 
@@ -148,7 +147,7 @@ export function Navbar() {
                   {NavIcon ? <NavIcon className="w-3.5 h-3.5" /> : null}
                   {link.name}
                   {isActive(link.href) && (
-                    <span className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-rose-500 rounded-full" />
+                    <span className="absolute bottom-0.5 left-3 right-3 h-0.5 bg-rose-500 rounded-full" />
                   )}
                 </Link>
               );
@@ -171,7 +170,7 @@ export function Navbar() {
                 {/* Notification Bell */}
                 <button className="relative hidden sm:flex items-center justify-center w-9 h-9 rounded-full hover:bg-rose-50 text-gray-500 hover:text-rose-600 transition-colors">
                   <Bell className="w-5 h-5" />
-                  {currentUser.notifications > 0 && (
+                  {currentUser && currentUser.notifications > 0 && (
                     <span className="absolute top-1 right-1 w-4 h-4 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
                       {currentUser.notifications}
                     </span>
@@ -278,7 +277,13 @@ export function Navbar() {
                       </div>
 
                       <div className="border-t border-gray-100 py-1">
-                        <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors">
+                        <button
+                          onClick={() => {
+                            dispatch(logout());
+                            window.location.href = "/";
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        >
                           <LogOut className="w-4 h-4" />
                           Sign Out
                         </button>
@@ -351,7 +356,7 @@ export function Navbar() {
                     <Droplet className="w-2.5 h-2.5 fill-white" />
                     {currentUser.bloodGroup}
                   </span>
-                  {currentUser.notifications > 0 && (
+                  {currentUser && currentUser.notifications > 0 && (
                     <span className="text-[11px] text-rose-600 font-semibold">
                       {currentUser.notifications} new notifications
                     </span>
@@ -421,7 +426,13 @@ export function Navbar() {
                     ) : null}
                   </Link>
                 ))}
-                <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors">
+                <button
+                  onClick={() => {
+                    dispatch(logout());
+                    window.location.href = "/";
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
+                >
                   <LogOut className="w-4 h-4" />
                   Sign Out
                 </button>

@@ -10,18 +10,46 @@ export type BloodGroup =
   | "O-";
 
 export interface BloodRequest {
-  id: number;
-  name: string;
-  avatar: string | null;
-  verified: boolean;
-  role: string;
-  hospital: string;
-  /** Coordinator / requester contact for WhatsApp & phone (demo). */
-  contactPhone: string;
+  _id: string;
+  requestNumber: string;
+  requesterId: {
+    _id: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    bloodGroup: string;
+  };
+  patientName: string;
+  patientAge: number;
+  patientGender: "male" | "female" | "other";
+  patientCondition: string;
   bloodGroup: BloodGroup;
-  urgency: Urgency;
+  unitsRequired: number;
+  componentType: "whole_blood" | "platelets" | "plasma" | "red_cells";
+  hospital: string;
+  division: string;
+  district: string;
+  ward?: string;
+  doctorName: string;
+  doctorContact?: string;
+  urgencyLevel: "normal" | "urgent" | "emergency";
   requiredBy: string;
-  units: number;
+  requiredByTime?: string;
+  specialInstructions?: string;
+  requesterName: string;
+  relation: string;
+  contactPhone: string;
+  alternatePhone?: string;
+  contactEmail?: string;
+  status: "pending" | "matched" | "completed" | "cancelled" | "expired";
+  matchedDonorId?: {
+    _id: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    bloodGroup: string;
+  };
+  notes?: string;
   createdAt: string;
-  message: string;
+  updatedAt: string;
 }

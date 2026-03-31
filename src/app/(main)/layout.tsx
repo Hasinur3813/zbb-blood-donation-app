@@ -10,7 +10,7 @@ export default function MainLayout({
   return (
     <>
       <Navbar />
-      <DevBanner />
+      {/* <DevBanner /> */}
       {children}
       <Footer />
     </>

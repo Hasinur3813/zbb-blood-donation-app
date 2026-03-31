@@ -38,6 +38,9 @@ import {
   AlertTriangle,
   Zap,
 } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { createBloodRequest } from "@/store";
+import toast, { Toaster } from "react-hot-toast";
 import DonorMapSection from "./components/donorMapSection";
 
 // ── Schema ──────────────────────────────────────────────────────────────────
@@ -339,7 +342,13 @@ function StepPatient({
   );
 }
 
-function StepHospital({ register, errors }: { register: UseFormRegister<FormValues>; errors: FieldErrors<FormValues>; }) {
+function StepHospital({
+  register,
+  errors,
+}: {
+  register: UseFormRegister<FormValues>;
+  errors: FieldErrors<FormValues>;
+}) {
   return (
     <div className="space-y-5">
       <Field label="Hospital / Clinic Name" error={errors.hospital?.message}>
@@ -698,6 +707,9 @@ function StepContact({
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function RequestBloodPage() {
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.requests);
+
   const [step, setStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
@@ -736,10 +748,19 @@ export default function RequestBloodPage() {
   };
 
   const onSubmit = async (data: FormValues) => {
-    await new Promise((r) => setTimeout(r, 1800));
-    console.log("Blood Request Submitted:", data);
-    setSubmittedData(data);
-    setIsSubmitted(true);
+    try {
+      const resultAction = await dispatch(createBloodRequest(data));
+
+      if (createBloodRequest.fulfilled.match(resultAction)) {
+        toast.success("Blood donation request submitted successfully!");
+        setSubmittedData(data);
+        setIsSubmitted(true);
+      } else {
+        toast.error(resultAction.payload || "Failed to submit request");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    }
   };
 
   const progress = ((step - 1) / 3) * 100;
@@ -762,6 +783,7 @@ export default function RequestBloodPage() {
 
   return (
     <>
+      <Toaster position="top-right" />
       <main className="min-h-screen bg-slate-50">
         {/* Urgency ambient top bar */}
         <div
@@ -1117,10 +1139,10 @@ export default function RequestBloodPage() {
                         ) : (
                           <button
                             type="submit"
-                            disabled={isSubmitting}
+                            disabled={loading || isSubmitting}
                             className={`flex-1 flex items-center justify-center gap-2 py-4 text-white font-bold rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm shadow-lg bg-linear-to-r ${urgencyGradient}`}
                           >
-                            {isSubmitting ? (
+                            {loading || isSubmitting ? (
                               <>
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
                                 Broadcasting…

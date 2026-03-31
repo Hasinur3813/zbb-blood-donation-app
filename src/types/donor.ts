@@ -75,7 +75,7 @@ export interface Donor {
   // Identity
   id: string;
   name: string;
-  avatar: string;
+  avatar: string | null;
   bloodGroup: BloodGroup;
   verified: boolean;
   status: DonorStatus;

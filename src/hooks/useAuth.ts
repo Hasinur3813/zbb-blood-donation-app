@@ -9,6 +9,9 @@ import {
   fetchCurrentUser,
   logout,
   clearAuthError,
+  requestPasswordReset as requestPasswordResetThunk,
+  resetPassword as resetPasswordThunk,
+  clearPasswordResetState,
 } from "@/store";
 import type { LoginRequest, RegisterRequest } from "@/types/auth";
 
@@ -20,25 +23,49 @@ import type { LoginRequest, RegisterRequest } from "@/types/auth";
  */
 export function useAuth() {
   const dispatch = useAppDispatch();
-  const { user, isAuthenticated, isLoading, error, accessToken } = useAppSelector(
-    (state) => state.auth
-  );
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    accessToken,
+    passwordResetEmailSent,
+    passwordResetSuccessful,
+    resetMessage,
+  } = useAppSelector((state) => state.auth);
 
   const login = useCallback(
     (credentials: LoginRequest) => dispatch(loginUser(credentials)),
-    [dispatch]
+    [dispatch],
   );
 
   const register = useCallback(
     (data: RegisterRequest) => dispatch(registerUser(data)),
-    [dispatch]
+    [dispatch],
   );
 
   const loadUser = useCallback(() => dispatch(fetchCurrentUser()), [dispatch]);
 
+  const requestPasswordReset = useCallback(
+    (payload: { email: string }) =>
+      dispatch(requestPasswordResetThunk(payload)),
+    [dispatch],
+  );
+
+  const resetPassword = useCallback(
+    (payload: { token: string; password: string }) =>
+      dispatch(resetPasswordThunk(payload)),
+    [dispatch],
+  );
+
   const signOut = useCallback(() => dispatch(logout()), [dispatch]);
 
   const clearError = useCallback(() => dispatch(clearAuthError()), [dispatch]);
+
+  const clearPasswordReset = useCallback(
+    () => dispatch(clearPasswordResetState()),
+    [dispatch],
+  );
 
   return {
     // State
@@ -47,12 +74,18 @@ export function useAuth() {
     isLoading,
     error,
     accessToken,
+    passwordResetEmailSent,
+    passwordResetSuccessful,
+    resetMessage,
 
     // Actions
     login,
     register,
     loadUser,
+    requestPasswordReset,
+    resetPassword,
     signOut,
     clearError,
+    clearPasswordReset,
   } as const;
 }

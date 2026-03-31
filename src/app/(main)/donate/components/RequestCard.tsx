@@ -1,16 +1,21 @@
 import { useState } from "react";
-import Image from "next/image";
 import Button from "@/components/ui/Button/Button";
 import { getTimeAgo } from "@/lib/timeAgo";
 import { Info, MapPin, ShieldCheck, UserCircle, X } from "lucide-react";
-import { BloodRequest } from "../types";
+import { BloodRequest, Urgency } from "../types";
 import { urgencyConfig } from "../data";
 import UrgencyBadge from "./UrgencyBadge";
 import Link from "next/link";
 
-export default function RequestCard({ request }: { request: BloodRequest }) {
+export default function RequestCard({
+  request,
+  onViewDetails,
+}: {
+  request: BloodRequest;
+  onViewDetails?: () => void;
+}) {
   const [open, setOpen] = useState(false);
-  const cfg = urgencyConfig[request.urgency];
+  const cfg = urgencyConfig[request.urgencyLevel];
 
   return (
     <>
@@ -27,89 +32,74 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
               </span>
             </div>
 
-            <UrgencyBadge urgency={request.urgency} />
+            <UrgencyBadge urgency={request.urgencyLevel as Urgency} />
           </div>
 
           {/* Requester */}
           <button
-            // onClick={onViewProfile}
-            title="View Profile"
-            className="mt-4 flex items-center cursor-pointer w-full mb-5  gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 transition"
+            onClick={onViewDetails}
+            title="View Details"
+            className="mt-4 flex items-center cursor-pointer w-full mb-5 gap-3 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 transition"
           >
-            <div className="relative">
-              {request.avatar ? (
-                <Image
-                  src={request.avatar}
-                  alt={request.name}
-                  width={36}
-                  height={36}
-                  className="w-9 h-9 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center">
-                  <UserCircle className="w-5 h-5 text-gray-400" />
-                </div>
-              )}
-
-              {request.verified && (
-                <span className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-0.5 shadow">
-                  <ShieldCheck className="w-3 h-3 text-rose-500" />
-                </span>
-              )}
+            <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center">
+              <UserCircle className="w-5 h-5 text-gray-400" />
             </div>
 
-            <div className="flex-1 text-left min-w-0">
-              <p className="text-sm font-medium group-hover:text-red-500 text-gray-800 truncate">
-                {request.name}
+            <div className="flex-1 text-left">
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-gray-900 text-sm">
+                  {request.requesterName}
+                </p>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              </div>
+              <p className="text-gray-500 text-xs">
+                {request.relation} • {request.patientName}
               </p>
-              <p className="text-xs text-gray-400">{request.role}</p>
             </div>
           </button>
-
-          <div className="flex items-center gap-1.5 text-gray-400 mt-1">
-            <MapPin className="w-3.5 h-3.5" />
-            <span className="text-sm truncate">{request.hospital}</span>
-          </div>
         </div>
 
-        {/* META */}
-        <div className="grid grid-cols-3 gap-4 text-center mb-6">
-          <div>
-            <p className="text-[11px] text-gray-400 uppercase">Posted</p>
-            <p className="text-sm font-semibold text-gray-800">
+        {/* BOTTOM */}
+        <div className="mt-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-1.5 text-gray-400">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm font-medium">{request.hospital}</span>
+            </div>
+
+            <span className="text-sm font-bold text-gray-900">
+              {request.unitsRequired}{" "}
+              {request.unitsRequired === 1 ? "unit" : "units"}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between mb-5">
+            <span className="text-sm text-gray-500">
               {getTimeAgo(request.createdAt)}
-            </p>
+            </span>
+
+            <span className="text-sm font-semibold text-gray-900">
+              Required by {new Date(request.requiredBy).toLocaleDateString()}
+            </span>
           </div>
 
-          <div>
-            <p className="text-[11px] text-gray-400 uppercase">Required</p>
-            <p className="text-sm font-semibold text-gray-800">
-              {request.requiredBy}
-            </p>
+          <div className="flex gap-2">
+            <Link
+              href={`/donate/${request._id}`}
+              className="inline-block w-full"
+            >
+              <Button variant="primary" size="sm" className="w-full">
+                Donate Now
+              </Button>
+            </Link>
+
+            <button
+              onClick={() => setOpen(true)}
+              className="w-11 h-11 rounded-xl cursor-pointer bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+            >
+              <Info className="w-4 h-4 text-gray-500" />
+            </button>
           </div>
-
-          <div>
-            <p className="text-[11px] text-gray-400 uppercase">Units</p>
-            <p className="text-sm font-semibold text-gray-800">
-              {request.units}
-            </p>
-          </div>
-        </div>
-
-        {/* ACTIONS */}
-        <div className="flex gap-2 mt-auto">
-          <Link href={`/donate/${request.id}`} className="inline-block w-full">
-            <Button variant="primary" size="md" className="flex-1 w-full">
-              Donate Now
-            </Button>
-          </Link>
-
-          <button
-            onClick={() => setOpen(true)}
-            className="w-11 h-11 rounded-xl cursor-pointer bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
-          >
-            <Info className="w-4 h-4 text-gray-500" />
-          </button>
         </div>
       </article>
 
@@ -154,12 +144,12 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
                 </div>
               </div>
 
-              <UrgencyBadge urgency={request.urgency} />
+              <UrgencyBadge urgency={request.urgencyLevel as Urgency} />
             </div>
 
             {/* Message */}
             <p className="text-sm text-gray-700 leading-relaxed">
-              {request.message}
+              {request.notes}
             </p>
 
             {/* Meta */}
@@ -176,16 +166,16 @@ export default function RequestCard({ request }: { request: BloodRequest }) {
 
               <div>
                 <p className="text-gray-400 text-xs">Units</p>
-                <p className="font-semibold">{request.units}</p>
+                <p className="font-semibold">{request.unitsRequired}</p>
               </div>
             </div>
 
             {/* CTA */}
             <Link
-              href={`/donate/${request.id}`}
+              href={`/donate/${request._id}`}
               className="inline-block w-full"
             >
-              <Button variant="primary" size="md" className="flex-1 w-full">
+              <Button variant="primary" size="md" className="w-full">
                 Donate Now
               </Button>
             </Link>

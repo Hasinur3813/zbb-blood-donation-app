@@ -16,18 +16,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-type Donor = {
-  id?: string | number;
-  name: string;
-  bloodGroup: string;
-  avatar: string | null;
-  verified: boolean;
-  city: string;
-  phone: string; // ✅ REQUIRED
-  lastDonatedAt: string;
-  totalDonations: number;
-};
+import { Donor } from "@/types/donor";
 
 type FormData = {
   location: string;
@@ -49,17 +38,19 @@ export default function DonorCard({ donor }: Props) {
   };
 
   // 🔥 Eligibility logic
-  const lastDonationDate = new Date(donor.lastDonatedAt);
+  const lastDonationDate = donor.lastDonatedAt
+    ? new Date(donor.lastDonatedAt)
+    : null;
   const today = new Date();
 
-  const diffInDays =
-    (today.getTime() - lastDonationDate.getTime()) / (1000 * 60 * 60 * 24);
+  const diffInDays = lastDonationDate
+    ? (today.getTime() - lastDonationDate.getTime()) / (1000 * 60 * 60 * 24)
+    : 90; // If no last donation, assume eligible
 
-  const isAvailable = diffInDays >= 90;
+  const isAvailable = donor.isAvailable;
   const progress = Math.min((diffInDays / 90) * 100, 100);
 
-  const nextEligibleDate = new Date(lastDonationDate);
-  nextEligibleDate.setDate(nextEligibleDate.getDate() + 90);
+  const nextEligibleDate = new Date(donor.nextEligibleAt);
 
   // 🔥 React Hook Form
   const { register, handleSubmit } = useForm<FormData>({
@@ -198,13 +189,15 @@ Please let me know if you can help🙏`,
               className={`h-full rounded-full transition-all duration-1000 ${
                 isAvailable ? "bg-emerald-500" : "bg-amber-400"
               }`}
-              style={{ width: `${progress.toFixed(2)}%` }}
+              style={{ width: `${progress.toFixed()}%` }}
             />
           </div>
 
           <p className="text-[10px] text-slate-400 italic">
             {isAvailable
-              ? `Last donated ${Math.floor(diffInDays)} days ago`
+              ? lastDonationDate
+                ? `Last donated ${Math.floor(diffInDays)} days ago`
+                : "No previous donations"
               : `Next eligible on ${nextEligibleDate.toLocaleDateString()}`}
           </p>
         </div>

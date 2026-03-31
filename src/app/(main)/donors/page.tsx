@@ -1,109 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, Filter } from "lucide-react";
 import DonorCard from "@/components/ui/DonorCard/DonorCard";
-
-// Mock Data
-export const MOCK_DONORS = [
-  {
-    id: 1,
-    name: "Hasinur Rahman",
-    avatar: "https://randomuser.me/api/portraits/men/75.jpg",
-    verified: true,
-    bloodGroup: "O+",
-    city: "Kushtia",
-    lastDonatedAt: "2025-11-20",
-    totalDonations: 15,
-    phone: "+8801773061332",
-    distance: 1.2,
-    isAvailable: true, // ✅ manually set or derived
-  },
-  {
-    id: 2,
-    name: "Sarah Ahmed",
-    bloodGroup: "A+",
-    city: "Dhaka",
-    avatar: null,
-    verified: true,
-    lastDonatedAt: "2026-02-15",
-    phone: "+8801773061332",
-    totalDonations: 6,
-    distance: 3.5,
-    isAvailable: false,
-  },
-  {
-    id: 3,
-    name: "Imran Hossain",
-    bloodGroup: "B+",
-    city: "Rajshahi",
-    avatar: null,
-    verified: false,
-    lastDonatedAt: "2025-12-01",
-    phone: "+8801773061332",
-    totalDonations: 9,
-    distance: 5.8,
-    isAvailable: true,
-  },
-  {
-    id: 4,
-    name: "Nusrat Jahan",
-    bloodGroup: "AB-",
-    city: "Khulna",
-    lastDonatedAt: "2026-01-10",
-    avatar: null,
-    verified: true,
-    phone: "+8801773061332",
-    totalDonations: 12,
-    distance: 2.1,
-    isAvailable: false,
-  },
-  {
-    id: 5,
-    name: "Tanvir Hasan",
-    bloodGroup: "O-",
-    city: "Jessore",
-    lastDonatedAt: "2025-10-05",
-    avatar: null,
-    verified: false,
-    phone: "+8801773061332",
-    totalDonations: 20,
-    distance: 7.3,
-    isAvailable: true,
-  },
-  {
-    id: 6,
-    name: "Fariha Sultana",
-    bloodGroup: "A-",
-    city: "Barisal",
-    lastDonatedAt: "2026-03-01",
-    avatar: null,
-    verified: true,
-    phone: "+8801773061332",
-    totalDonations: 4,
-    distance: 0.9,
-    isAvailable: false,
-  },
-];
+import { useAppDispatch, useAppSelector } from "@/store";
+import { fetchDonors, setFilters, clearFilters, setPage } from "@/store";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function DonorsPage() {
-  const [filterGroup, setFilterGroup] = useState("");
-  const [filterLocation, setFilterLocation] = useState("");
+  const dispatch = useAppDispatch();
+  const { donors, loading, error, totalPages, currentPage, filters } =
+    useAppSelector((state) => state.donors);
+
+  const [filterGroup, setFilterGroup] = useState(filters.bloodGroup);
+  const [filterLocation, setFilterLocation] = useState(filters.city);
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
-  const filteredDonors = MOCK_DONORS.filter((donor) => {
-    if (filterGroup && donor.bloodGroup !== filterGroup) return false;
-    if (
-      filterLocation &&
-      !donor.city.toLowerCase().includes(filterLocation.toLowerCase())
-    )
-      return false;
-    if (showAvailableOnly && !donor.isAvailable) return false;
-    return true;
-  });
+  // Fetch donors on mount and when filters change
+  useEffect(() => {
+    dispatch(fetchDonors());
+  }, [dispatch, filters, currentPage]);
+
+  // Show error toast
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  const handleFilterChange = () => {
+    dispatch(
+      setFilters({
+        bloodGroup: filterGroup,
+        city: filterLocation,
+      }),
+    );
+  };
+
+  const handleResetFilters = () => {
+    setFilterGroup("");
+    setFilterLocation("");
+    setShowAvailableOnly(false);
+    dispatch(clearFilters());
+  };
+
+  const handlePageChange = (page: number) => {
+    dispatch(setPage(page));
+  };
+
+  // Filter donors locally for available only (since backend doesn't support this filter yet)
+  const filteredDonors = showAvailableOnly
+    ? donors.filter((donor) => donor.isAvailable)
+    : donors;
 
   return (
     <div className="bg-slate-50 min-h-screen py-10">
+      <Toaster position="top-right" />
       <div className="container mx-auto px-4">
         {/* Header Section */}
         <div className="mb-10 text-center max-w-2xl mx-auto">
@@ -178,16 +130,20 @@ export default function DonorsPage() {
                 </label>
               </div>
 
-              <button
-                onClick={() => {
-                  setFilterGroup("");
-                  setFilterLocation("");
-                  setShowAvailableOnly(false);
-                }}
-                className="w-full py-2 mt-4 text-sm font-semibold text-slate-500 hover:text-slate-800 border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
-              >
-                Reset Filters
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleFilterChange}
+                  className="flex-1 py-2 text-sm font-semibold text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+                >
+                  Apply Filters
+                </button>
+                <button
+                  onClick={handleResetFilters}
+                  className="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
             </div>
           </aside>
 
@@ -211,7 +167,12 @@ export default function DonorsPage() {
               </div>
             </div>
 
-            {filteredDonors.length === 0 ? (
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span className="ml-2 text-slate-600">Loading donors...</span>
+              </div>
+            ) : filteredDonors.length === 0 ? (
               <div className="bg-white p-12 text-center rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center">
                 <div className="w-16 h-16 bg-slate-50 flex items-center justify-center rounded-full mb-4">
                   <Search className="h-8 w-8 text-slate-300" />
@@ -227,104 +188,31 @@ export default function DonorsPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-max gap-6">
                 {filteredDonors.map((donor) => (
-                  // <div
-                  //   key={donor.id}
-                  //   className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-primary/20 transition-all flex flex-col gap-4"
-                  // >
-                  //   {/* Header */}
-                  //   <div className="flex justify-between items-start">
-                  //     <div className="flex items-center gap-4">
-                  //       <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold border border-slate-200 overflow-hidden">
-                  //         <User className="h-6 w-6 opacity-30" />
-                  //       </div>
-                  //       <div>
-                  //         <h3 className="font-bold text-lg text-slate-900 leading-tight">
-                  //           {donor.name}
-                  //         </h3>
-                  //         <p className="text-sm text-slate-500 flex items-center gap-1 mt-0.5">
-                  //           <MapPin className="h-3.5 w-3.5" />
-                  //           {donor.city} ({donor.distance})
-                  //         </p>
-                  //       </div>
-                  //     </div>
-
-                  //     {/* Blood Badge */}
-                  //     <div
-                  //       className={`px-3 py-2 rounded-lg font-extrabold text-lg flex items-center justify-center min-w-12 ${donor.bloodGroup.includes("-") ? "bg-blue-50 text-blue-700" : "bg-red-50 text-red-700"}`}
-                  //     >
-                  //       {donor.bloodGroup}
-                  //     </div>
-                  //   </div>
-
-                  //   {/* Details */}
-                  //   <div className="grid grid-cols-2 gap-3 pb-4 border-b border-slate-100">
-                  //     <div className="flex items-center gap-2 text-sm">
-                  //       <Calendar className="h-4 w-4 text-slate-400" />
-                  //       <div>
-                  //         <p className="text-xs text-slate-500 font-medium">
-                  //           Last Donated
-                  //         </p>
-                  //         <p className="font-medium text-slate-800">
-                  //           {donor.lastDonatedAt}
-                  //         </p>
-                  //       </div>
-                  //     </div>
-                  //     <div className="flex items-center gap-2 text-sm">
-                  //       {donor.isAvailable ? (
-                  //         <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                  //       ) : (
-                  //         <Clock className="h-5 w-5 text-amber-500" />
-                  //       )}
-                  //       <div>
-                  //         <p className="text-xs text-slate-500 font-medium">
-                  //           Status
-                  //         </p>
-                  //         <span
-                  //           className={`font-semibold ${donor.isAvailable ? "text-emerald-600" : "text-amber-600"}`}
-                  //         >
-                  //           {donor.isAvailable
-                  //             ? "Ready to Donate"
-                  //             : "On Cooldown"}
-                  //         </span>
-                  //       </div>
-                  //     </div>
-                  //   </div>
-
-                  //   {/* Action */}
-                  //   <button
-                  //     disabled={!donor.isAvailable}
-                  //     className="w-full py-2.5 rounded-lg font-semibold text-sm transition-colors text-center disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-100 border disabled:cursor-not-allowed bg-primary/10 text-primary hover:bg-primary hover:text-white"
-                  //   >
-                  //     {donor.isAvailable
-                  //       ? "Contact Donor"
-                  //       : "Not Available Currently"}
-                  //   </button>
-                  // </div>
                   <DonorCard key={donor.id} donor={donor} />
                 ))}
               </div>
             )}
 
-            {/* Pagination Dummy */}
-            {filteredDonors.length > 0 && (
-              <div className="mt-10 flex justify-center">
-                <nav className="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200">
-                  <button className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors">
-                    Prev
-                  </button>
-                  <button className="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-white text-sm font-medium shadow-sm">
-                    1
-                  </button>
-                  <button className="w-8 h-8 flex items-center justify-center rounded-md text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors">
-                    2
-                  </button>
-                  <button className="w-8 h-8 flex items-center justify-center rounded-md text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors">
-                    3
-                  </button>
-                  <button className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    Next
-                  </button>
-                </nav>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8">
+                <div className="flex gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          page === currentPage
+                            ? "bg-primary text-white"
+                            : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ),
+                  )}
+                </div>
               </div>
             )}
           </main>

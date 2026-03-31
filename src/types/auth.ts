@@ -30,6 +30,9 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  passwordResetEmailSent: boolean;
+  passwordResetSuccessful: boolean;
+  resetMessage: string | null;
 }
 
 // ── API Request / Response DTOs ───────────────────────────────────────────────
@@ -40,7 +43,7 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  name: string;
+  fullName: string;
   email: string;
   password: string;
   phone: string;
@@ -49,6 +52,8 @@ export interface RegisterRequest {
   city: string;
   district: string;
   country: string;
+  lastDonation?: Date | null; // ISO date string
+  agreedToTerms: boolean;
 }
 
 export interface AuthResponse {
@@ -64,4 +69,13 @@ export interface RefreshTokenRequest {
 export interface RefreshTokenResponse {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
 }
