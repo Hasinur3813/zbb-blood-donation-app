@@ -29,8 +29,8 @@ type RequestUrgency = "EMERGENCY" | "URGENT" | "NORMAL";
 type DonorStatus = "PENDING" | "CONFIRMED" | "DECLINED";
 
 interface RespondedDonor {
-  id: string;
-  name: string;
+  _id: string;
+  fullName: string;
   avatar?: string;
   bloodGroup: string;
   phone: string;
@@ -41,7 +41,7 @@ interface RespondedDonor {
 }
 
 interface BloodRequest {
-  id: string;
+  _id: string;
   requestNo: string;
   bloodGroup: string;
   reason: string;
@@ -61,7 +61,7 @@ interface BloodRequest {
 // ── Dummy data ────────────────────────────────────────────────────────────────
 
 const REQUEST: BloodRequest = {
-  id: "req_001",
+  _id: "req_001",
   requestNo: "4920",
   bloodGroup: "B+",
   reason: "Type B+ required for surgery",
@@ -77,8 +77,8 @@ const REQUEST: BloodRequest = {
   status: "ACTIVE",
   respondedDonors: [
     {
-      id: "d_001",
-      name: "Rahim Uddin",
+      _id: "d_001",
+      fullName: "Rahim Uddin",
       bloodGroup: "B+",
       phone: "+8801811223344",
       city: "Dhaka",
@@ -87,8 +87,8 @@ const REQUEST: BloodRequest = {
       status: "CONFIRMED",
     },
     {
-      id: "d_002",
-      name: "Karim Hassan",
+      _id: "d_002",
+      fullName: "Karim Hassan",
       avatar: "",
       bloodGroup: "O-",
       phone: "+8801922334455",
@@ -98,8 +98,8 @@ const REQUEST: BloodRequest = {
       status: "PENDING",
     },
     {
-      id: "d_003",
-      name: "Fatema Begum",
+      _id: "d_003",
+      fullName: "Fatema Begum",
       bloodGroup: "B+",
       phone: "+8801633445566",
       city: "Dhaka",
@@ -108,8 +108,8 @@ const REQUEST: BloodRequest = {
       status: "PENDING",
     },
     {
-      id: "d_004",
-      name: "Mostak Ahmed",
+      _id: "d_004",
+      fullName: "Mostak Ahmed",
       bloodGroup: "B+",
       phone: "+8801744556677",
       city: "Narayanganj",
@@ -244,7 +244,7 @@ export default function ManageSingleRequestPage() {
 
   const [donorStatuses, setDonorStatuses] = useState<
     Record<string, DonorStatus>
-  >(Object.fromEntries(req.respondedDonors.map((d) => [d.id, d.status])));
+  >(Object.fromEntries(req.respondedDonors.map((d) => [d._id, d.status])));
 
   const [reqStatus, setReqStatus] = useState<RequestStatus>(req.status);
 
@@ -266,7 +266,7 @@ export default function ManageSingleRequestPage() {
 
   const whatsappText = (donor: RespondedDonor) =>
     encodeURIComponent(
-      `Hi ${donor.name}, thank you for responding to blood request #${req.requestNo}. We need ${req.bloodGroup} blood at ${req.hospital}. Please confirm your availability.`,
+      `Hi ${donor.fullName}, thank you for responding to blood request #${req.requestNo}. We need ${req.bloodGroup} blood at ${req.hospital}. Please confirm your availability.`,
     );
 
   return (
@@ -480,12 +480,12 @@ export default function ManageSingleRequestPage() {
             ) : (
               <div className="space-y-3">
                 {req.respondedDonors.map((donor) => {
-                  const currentStatus = donorStatuses[donor.id];
+                  const currentStatus = donorStatuses[donor._id];
                   const dsCfg = donorStatusConfig[currentStatus];
 
                   return (
                     <div
-                      key={donor.id}
+                      key={donor._id}
                       className={`border rounded-2xl p-4 transition-colors ${
                         currentStatus === "DECLINED"
                           ? "opacity-50 bg-gray-50 border-gray-100"
@@ -500,7 +500,7 @@ export default function ManageSingleRequestPage() {
                             {donor.avatar ? (
                               <Image
                                 src={donor.avatar}
-                                alt={donor.name}
+                                alt={donor.fullName}
                                 width={36}
                                 height={36}
                                 className="w-9 h-9 rounded-xl object-cover"
@@ -519,7 +519,7 @@ export default function ManageSingleRequestPage() {
                           <div>
                             <div className="flex items-center gap-1.5">
                               <p className="text-sm font-bold text-gray-900">
-                                {donor.name}
+                                {donor.fullName}
                               </p>
                               {donor.verified && (
                                 <ShieldCheck className="w-3.5 h-3.5 text-rose-500" />
@@ -573,7 +573,7 @@ export default function ManageSingleRequestPage() {
                           <>
                             <button
                               onClick={() =>
-                                updateDonorStatus(donor.id, "CONFIRMED")
+                                updateDonorStatus(donor._id, "CONFIRMED")
                               }
                               className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-100 px-3 py-1.5 rounded-lg transition-colors"
                             >
@@ -582,7 +582,7 @@ export default function ManageSingleRequestPage() {
                             </button>
                             <button
                               onClick={() =>
-                                updateDonorStatus(donor.id, "DECLINED")
+                                updateDonorStatus(donor._id, "DECLINED")
                               }
                               className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-400 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors"
                             >
@@ -596,7 +596,7 @@ export default function ManageSingleRequestPage() {
                         {isActive && currentStatus === "CONFIRMED" && (
                           <button
                             onClick={() =>
-                              updateDonorStatus(donor.id, "PENDING")
+                              updateDonorStatus(donor._id, "PENDING")
                             }
                             className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-400 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors"
                           >

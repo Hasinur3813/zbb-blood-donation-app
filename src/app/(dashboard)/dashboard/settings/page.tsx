@@ -118,8 +118,8 @@ function ProfileTab({ donor }: { donor: typeof dummyDonor }) {
         <div className="flex items-center gap-4">
           <div className="relative shrink-0">
             <Image
-              src={donor.avatar}
-              alt={donor.name}
+              src={donor.avatar || ""}
+              alt={donor.fullName}
               width={56}
               height={56}
               className="w-14 h-14 rounded-xl object-cover"
@@ -148,7 +148,7 @@ function ProfileTab({ donor }: { donor: typeof dummyDonor }) {
         <div className="space-y-3">
           <div>
             <label className={labelClass}>Full Name</label>
-            <input className={inputClass} defaultValue={donor.name} />
+            <input className={inputClass} defaultValue={donor.fullName} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

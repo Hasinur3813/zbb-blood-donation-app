@@ -1,9 +1,11 @@
 // hooks/useRequests.ts
-import { useEffect } from "react";
+"use client";
+
+import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-hot-toast";
 
 import { fetchRequests, type AppDispatch, type RootState } from "@/store";
+import { useErrorToast } from "@/components/ErrorToast/ErrorToastProvider";
 
 type UseRequestsOptions = {
   bloodFilter?: string;
@@ -17,30 +19,29 @@ export const useRequests = ({
   limit = 4,
 }: UseRequestsOptions = {}) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { showError } = useErrorToast();
 
   const state = useSelector((state: RootState) => state.requests);
-
   const { currentPage } = state;
 
-  const fetchData = async () => {
-    const params: {
-      page?: number;
-      limit?: number;
-      status?: string;
-    } = {
-      page: currentPage,
-      limit,
-      status: "pending",
-    };
-
+  const fetchData = useCallback(async () => {
     try {
-      await dispatch(fetchRequests(params)).unwrap();
+      await dispatch(
+        fetchRequests({
+          page: currentPage,
+          limit,
+          status: "pending",
+        })
+      ).unwrap();
     } catch (err) {
-      const message =
-        typeof err === "string" ? err : "Failed to load blood requests";
-      toast.error(message);
+      // Use the global error toast system — err is already rejectValue string
+      // but we call showError to route through the full handler pipeline.
+      showError(
+        typeof err === "string" ? new Error(err) : err,
+        { component: "useRequests", action: "fetchRequests" }
+      );
     }
-  };
+  }, [dispatch, currentPage, limit, showError]);
 
   useEffect(() => {
     if (autoFetch) {

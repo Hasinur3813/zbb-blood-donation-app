@@ -159,7 +159,7 @@ export default function DonorProfilePage() {
   const recentHistory = donor.donationHistory.slice(0, 4);
 
   const whatsappText = encodeURIComponent(
-    `Hi ${donor.name}, I urgently need ${donor.bloodGroup} blood. Could you please help me?`,
+    `Hi ${donor.fullName}, I urgently need ${donor.bloodGroup} blood. Could you please help me?`,
   );
   const whatsappUrl = `https://wa.me/${donor.phone.replace(/\D/g, "")}?text=${whatsappText}`;
 
@@ -188,7 +188,7 @@ export default function DonorProfilePage() {
             <div className="relative shrink-0 self-start">
               <Image
                 src={donor.avatar}
-                alt={donor.name}
+                alt={donor.fullName}
                 width={96}
                 height={96}
                 className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover"
@@ -209,7 +209,7 @@ export default function DonorProfilePage() {
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900">
-                  {donor.name}
+                  {donor.fullName}
                 </h1>
                 {donor.verified ? (
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full">
@@ -427,7 +427,7 @@ export default function DonorProfilePage() {
           <div className="space-y-3">
             {recentHistory.map((record) => (
               <div
-                key={record.id}
+                key={record._id}
                 className={`flex items-start gap-3 ${
                   record.status === "EXPIRED" ? "opacity-50" : ""
                 }`}

@@ -57,7 +57,7 @@ export default function DonorCard({ donor }: Props) {
     defaultValues: {
       location: currentUser.city,
       message: `🩸Blood Request
-Hello ${donor.name},
+Hello ${donor.fullName},
 
 I am ${currentUser.name} from zbb.com.
 I need ${donor.bloodGroup} blood.
@@ -101,7 +101,7 @@ Please let me know if you can help🙏`,
                 <>
                   <Image
                     src={donor.avatar}
-                    alt={donor.name}
+                    alt={donor.fullName}
                     width={56}
                     height={56}
                     className="w-14 h-14 rounded-2xl object-cover"
@@ -127,7 +127,7 @@ Please let me know if you can help🙏`,
             <div>
               <div className="flex items-center gap-1.5 flex-wrap">
                 <h4 className="font-bold text-slate-800 leading-tight">
-                  {donor.name}
+                  {donor.fullName}
                 </h4>
                 {donor.verified && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-bold uppercase tracking-wider">
@@ -145,7 +145,7 @@ Please let me know if you can help🙏`,
 
           {/* Visit profile button */}
           <Link
-            href={`/donors/${donor.id}`}
+            href={`/donors/${donor._id}`}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 hover:bg-rose-50 hover:text-rose-600 text-slate-400 transition-colors shrink-0"
             aria-label="View donor profile"
           >
@@ -237,7 +237,7 @@ Please let me know if you can help🙏`,
                   </div>
                   <div>
                     <h2 className="text-base font-bold text-gray-900 leading-tight">
-                      Contact {donor.name}
+                      Contact {donor.fullName}
                     </h2>
                     <p className="text-xs text-gray-400 mt-0.5">
                       Blood Group{" "}

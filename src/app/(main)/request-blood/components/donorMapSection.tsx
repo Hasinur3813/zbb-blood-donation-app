@@ -22,20 +22,20 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
 });
 
 type Donor = {
-  id: number;
-  name: string;
+  _id: number;
+  fullName: string;
   lat: number;
   lng: number;
 };
 
 const donors: Donor[] = [
-  { id: 1, name: "Dr. Rahman", lat: 23.8103, lng: 90.4125 }, // Dhaka
-  { id: 2, name: "Hasan", lat: 22.3569, lng: 91.7832 }, // Chittagong
-  { id: 3, name: "Nusrat", lat: 22.8456, lng: 89.5403 }, // Khulna
-  { id: 4, name: "Arif", lat: 24.3745, lng: 88.6042 }, // Rajshahi
-  { id: 5, name: "Sadia", lat: 24.8949, lng: 91.8687 }, // Sylhet
-  { id: 6, name: "Rana", lat: 22.701, lng: 90.3535 }, // Barishal
-  { id: 7, name: "Tania", lat: 25.7439, lng: 89.2752 }, // Rangpur
+  { _id: 1, fullName: "Dr. Rahman", lat: 23.8103, lng: 90.4125 }, // Dhaka
+  { _id: 2, fullName: "Hasan", lat: 22.3569, lng: 91.7832 }, // Chittagong
+  { _id: 3, fullName: "Nusrat", lat: 22.8456, lng: 89.5403 }, // Khulna
+  { _id: 4, fullName: "Arif", lat: 24.3745, lng: 88.6042 }, // Rajshahi
+  { _id: 5, fullName: "Sadia", lat: 24.8949, lng: 91.8687 }, // Sylhet
+  { _id: 6, fullName: "Rana", lat: 22.701, lng: 90.3535 }, // Barishal
+  { _id: 7, fullName: "Tania", lat: 25.7439, lng: 89.2752 }, // Rangpur
 ];
 
 export default function DonorMapSection() {
@@ -76,11 +76,11 @@ export default function DonorMapSection() {
             <div className="flex -space-x-4">
               {donors.map((donor) => (
                 <div
-                  key={donor.id}
+                  key={donor._id}
                   className="w-12 h-12 rounded-full border-4 border-white bg-gray-300 flex items-center justify-center text-sm font-bold text-white relative z-10"
-                  title={donor.name} // optional: show name on hover
+                  title={donor.fullName} // optional: show name on hover
                 >
-                  {donor.name[0]} {/* First letter of name */}
+                  {donor.fullName[0]} {/* First letter of name */}
                 </div>
               ))}
             </div>
@@ -104,8 +104,8 @@ export default function DonorMapSection() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               {donors.map((donor) => (
-                <Marker key={donor.id} position={[donor.lat, donor.lng]}>
-                  <Popup>{donor.name}</Popup>
+                <Marker key={donor._id} position={[donor.lat, donor.lng]}>
+                  <Popup>{donor.fullName}</Popup>
                 </Marker>
               ))}
             </MapContainer>

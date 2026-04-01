@@ -1,5 +1,6 @@
 import apiClient from "./apiClient";
-import { DonationRequest } from "@/types/Request";
+import { Request as DonationRequest } from "@/types/Request";
+import { createAppError } from "@/lib/errorHandler";
 
 interface RequestsResponse {
   requests: DonationRequest[];
@@ -25,18 +26,24 @@ export const getDonationRequests = async (
     const response = await apiClient.get(`/requests?${params.toString()}`);
     return response.data.data;
   } catch (error) {
-    console.error("Failed to fetch donation requests:", error);
-    throw new Error("Failed to fetch donation requests. Please try again later.");
+    throw createAppError(error, "Failed to fetch donation requests. Please try again later.", {
+      component: "requestApi",
+      action: "getDonationRequests",
+    });
   }
 };
 
-export const createDonationRequest = async (requestData: Partial<DonationRequest>): Promise<DonationRequest> => {
+export const createDonationRequest = async (
+  requestData: Partial<DonationRequest>,
+): Promise<DonationRequest> => {
   try {
     const response = await apiClient.post("/requests", requestData);
     return response.data.data;
   } catch (error) {
-    console.error("Failed to create donation request:", error);
-    throw new Error("Failed to create donation request. Please check your input and try again.");
+    throw createAppError(error, "Failed to create donation request. Please check your input and try again.", {
+      component: "requestApi",
+      action: "createDonationRequest",
+    });
   }
 };
 
@@ -49,10 +56,14 @@ export const getMyDonationRequests = async (
   params.append("limit", limit.toString());
 
   try {
-    const response = await apiClient.get(`/requests/my-requests?${params.toString()}`);
+    const response = await apiClient.get(
+      `/requests/my-requests?${params.toString()}`,
+    );
     return response.data.data;
   } catch (error) {
-    console.error("Failed to fetch your donation requests:", error);
-    throw new Error("Failed to fetch your donation requests. Please try again later.");
+    throw createAppError(error, "Failed to fetch your donation requests. Please try again later.", {
+      component: "requestApi",
+      action: "getMyDonationRequests",
+    });
   }
 };

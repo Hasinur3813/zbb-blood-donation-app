@@ -32,8 +32,8 @@ import Link from "next/link";
 type ResponderStatus = "pending" | "confirmed" | "donated" | "cancelled";
 
 export interface Responder {
-  id: string;
-  name: string;
+  _id: string;
+  fullName: string;
   avatar: string | null;
   bloodGroup: string;
   phone?: string;
@@ -195,15 +195,15 @@ const MOCK_REQUEST = {
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
 function Avatar({
-  name,
+  fullName,
   avatar,
   size = 9,
 }: {
-  name: string;
+  fullName: string;
   avatar: string | null;
   size?: number;
 }) {
-  const initials = name
+  const initials = fullName
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -213,7 +213,7 @@ function Avatar({
   return avatar ? (
     <Image
       src={avatar}
-      alt={name}
+      alt={fullName}
       width={size * 4}
       height={size * 4}
       className={`${sz} rounded-full object-cover`}
@@ -252,13 +252,13 @@ function ResponderCard({
 }: {
   responder: Responder;
   isOwner: boolean;
-  onStatusChange?: (id: string, s: ResponderStatus) => void;
+  onStatusChange?: (_id: string, s: ResponderStatus) => void;
 }) {
   const cfg = getBloodCfg(responder.bloodGroup);
   return (
     <div className="flex items-start gap-3 p-4 rounded-2xl border border-gray-100 bg-white hover:border-rose-100 hover:shadow-sm transition-all">
       <div className="relative shrink-0">
-        <Avatar name={responder.name} avatar={responder.avatar} size={10} />
+        <Avatar fullName={responder.fullName} avatar={responder.avatar} size={10} />
         {responder.verified && (
           <span className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-0.5 shadow-sm">
             <ShieldCheck className="w-3 h-3 text-rose-500" />
@@ -270,7 +270,7 @@ function ResponderCard({
         <div className="flex items-start justify-between gap-2 flex-wrap">
           <div>
             <p className="text-sm font-semibold text-gray-800">
-              {responder.name}
+              {responder.fullName}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
               {responder.location} · {getTimeAgo(responder.respondedAt)}
@@ -312,13 +312,13 @@ function ResponderCard({
         {isOwner && responder.status === "pending" && (
           <div className="mt-3 flex gap-2">
             <button
-              onClick={() => onStatusChange?.(responder.id, "confirmed")}
+              onClick={() => onStatusChange?.(responder._id, "confirmed")}
               className="text-xs font-medium px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-1"
             >
               <CheckCircle2 className="w-3 h-3" /> Confirm
             </button>
             <button
-              onClick={() => onStatusChange?.(responder.id, "cancelled")}
+              onClick={() => onStatusChange?.(responder._id, "cancelled")}
               className="text-xs font-medium px-3 py-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex items-center gap-1"
             >
               <XCircle className="w-3 h-3" /> Cancel
@@ -328,7 +328,7 @@ function ResponderCard({
         {isOwner && responder.status === "confirmed" && (
           <div className="mt-3">
             <button
-              onClick={() => onStatusChange?.(responder.id, "donated")}
+              onClick={() => onStatusChange?.(responder._id, "donated")}
               className="text-xs font-medium px-3 py-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors flex items-center gap-1"
             >
               <Heart className="w-3 h-3 fill-green-500" /> Mark as Donated
@@ -353,8 +353,8 @@ export default function DonationRequestPage() {
 
   // Simulate logged-in donor
   const ME = {
-    id: dummyDonor.id,
-    name: dummyDonor.name,
+    _id: dummyDonor._id,
+    fullName: dummyDonor.fullName,
     bloodGroup: dummyDonor.bloodGroup,
     verified: dummyDonor.verified,
     donationsCount: dummyDonor.totalDonations,
@@ -372,8 +372,8 @@ export default function DonationRequestPage() {
     setSubmitting(true);
     await new Promise((r) => setTimeout(r, 1400)); // simulate API
     const newResponder: Responder = {
-      id: "me",
-      name: ME.name,
+      _id: "me",
+      fullName: ME.fullName,
       avatar: null,
       bloodGroup: ME.bloodGroup,
       phone: "+880 1700-000000",
@@ -390,11 +390,11 @@ export default function DonationRequestPage() {
     setSubmitting(false);
   };
 
-  const handleStatusChange = (id: string, status: ResponderStatus) => {
+  const handleStatusChange = (_id: string, status: ResponderStatus) => {
     setRequest((r) => ({
       ...r,
       responders: r.responders.map((res) =>
-        res.id === id ? { ...res, status } : res,
+        res._id === _id ? { ...res, status } : res,
       ),
       unitsCollected:
         status === "donated" ? r.unitsCollected + 1 : r.unitsCollected,
@@ -402,7 +402,7 @@ export default function DonationRequestPage() {
   };
 
   const alreadyResponded =
-    responded || request.responders.some((r) => r.id === "me");
+    responded || request.responders.some((r) => r._id === "me");
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -596,7 +596,7 @@ export default function DonationRequestPage() {
                 <div className="space-y-3">
                   {request.responders.map((r) => (
                     <ResponderCard
-                      key={r.id}
+                      key={r._id}
                       responder={r}
                       isOwner={isOwner}
                       onStatusChange={handleStatusChange}
@@ -617,7 +617,7 @@ export default function DonationRequestPage() {
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <Avatar
-                    name={request.name}
+                    fullName={request.name}
                     avatar={request.avatar}
                     size={11}
                   />
@@ -747,10 +747,10 @@ export default function DonationRequestPage() {
                   <div className="p-5 space-y-4">
                     {/* Donor preview */}
                     <div className="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
-                      <Avatar name={ME.name} avatar={null} size={9} />
+                      <Avatar fullName={ME.fullName} avatar={null} size={9} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-800">
-                          {ME.name}
+                          {ME.fullName}
                         </p>
                         <p className="text-xs text-gray-400">
                           {ME.bloodGroup} · {ME.donationsCount} donations

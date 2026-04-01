@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+export const dynamic = "force-dynamic";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,9 +26,13 @@ const schema = z
 type ResetPasswordForm = z.infer<typeof schema>;
 
 export default function ResetPasswordPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get("token") || "";
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setToken(params.get("token") || "");
+  }, []);
 
   const {
     resetPassword,

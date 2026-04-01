@@ -1,30 +1,16 @@
 // types/auth.ts
 
-import type { BloodGroup, Gender } from "./donor";
+import type { BloodGroup, Gender, Donor } from "./donor";
 
 // ── User Role ─────────────────────────────────────────────────────────────────
 export type UserRole = "donor" | "recipient" | "admin";
 
 // ── Auth User (what we store in Redux) ────────────────────────────────────────
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  phone: string;
-  bloodGroup: BloodGroup;
-  gender: Gender;
-  role: UserRole;
-  verified: boolean;
-  city: string;
-  district: string;
-  country: string;
-  memberSince: string;
-}
+// Using Donor interface directly from ./donor.ts to ensure absolute auth data flow.
 
 // ── Auth State ────────────────────────────────────────────────────────────────
 export interface AuthState {
-  user: AuthUser | null;
+  user: Donor | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
@@ -57,7 +43,7 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  user: AuthUser;
+  user: Donor;
   accessToken: string;
   refreshToken: string;
 }

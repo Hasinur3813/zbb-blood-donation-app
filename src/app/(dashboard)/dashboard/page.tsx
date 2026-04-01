@@ -117,8 +117,8 @@ export default function UserDashboard() {
               {/* Avatar */}
               <div className="relative shrink-0">
                 <Image
-                  src={donor.avatar}
-                  alt={donor.name}
+                  src={donor.avatar || ""}
+                  alt={donor.fullName}
                   width={64}
                   height={64}
                   className="w-16 h-16 rounded-2xl object-cover"
@@ -141,7 +141,7 @@ export default function UserDashboard() {
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                   <h1 className="text-lg font-extrabold tracking-tight text-gray-900 truncate">
-                    {donor.name}
+                    {donor.fullName}
                   </h1>
                   {donor.verified ? (
                     <ShieldCheck className="w-4 h-4 text-rose-500 shrink-0" />
@@ -191,8 +191,8 @@ export default function UserDashboard() {
             {/* Avatar */}
             <div className="relative shrink-0">
               <Image
-                src={donor.avatar}
-                alt={donor.name}
+                src={donor.avatar || ""}
+                alt={donor.fullName}
                 width={80}
                 height={80}
                 className="w-20 h-20 rounded-2xl object-cover"
@@ -215,7 +215,7 @@ export default function UserDashboard() {
             <div>
               <div className="flex items-center gap-2 flex-wrap mb-1">
                 <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
-                  {donor.name}
+                  {donor.fullName}
                 </h1>
                 {donor.verified ? (
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full">
@@ -396,7 +396,7 @@ export default function UserDashboard() {
             <div className="space-y-3">
               {recentHistory.map((record) => (
                 <div
-                  key={record.id}
+                  key={record._id}
                   className={`flex items-start gap-3 ${record.status === "EXPIRED" ? "opacity-50" : ""}`}
                 >
                   <div className="w-9 h-9 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0">
@@ -435,7 +435,7 @@ export default function UserDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {donor.requestsMade.map((req) => (
                 <div
-                  key={req.id}
+                  key={req._id}
                   className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between mb-2.5">

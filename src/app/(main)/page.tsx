@@ -217,7 +217,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {donors?.map((donor) => (
-              <DonorCard key={donor.id} donor={donor} />
+              <DonorCard key={donor._id} donor={donor} />
             ))}
           </div>
         </div>

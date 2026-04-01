@@ -3,16 +3,16 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
 import apiClient from "@/lib/apiClient";
+import { getUserFriendlyMessage } from "@/lib/errorHandler";
 import type {
   AuthState,
-  AuthUser,
   LoginRequest,
   RegisterRequest,
   AuthResponse,
   RefreshTokenResponse,
 } from "@/types/auth";
+import { Donor } from "@/types/donor";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -41,15 +41,13 @@ function clearTokens() {
   localStorage.removeItem("refreshToken");
 }
 
-// Helper to extract error message from Axios errors
+// Use getUserFriendlyMessage from errorHandler (handles AxiosError, Error, string, etc.)
 function getErrorMessage(error: unknown, fallback: string): string {
-  if (error instanceof AxiosError) {
-    return error.response?.data?.message || error.message || fallback;
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return fallback;
+  const msg = getUserFriendlyMessage(error);
+  // If getUserFriendlyMessage returns the generic fallback, use our provided fallback instead
+  return msg !== "An unexpected error occurred. Please try again."
+    ? msg
+    : fallback;
 }
 
 // ── Initial state ─────────────────────────────────────────────────────────────
@@ -145,7 +143,7 @@ export const refreshAccessToken = createAsyncThunk<
 });
 
 export const fetchCurrentUser = createAsyncThunk<
-  AuthUser,
+  Donor,
   void,
   { rejectValue: string }
 >("auth/fetchCurrentUser", async (_, { rejectWithValue }) => {
@@ -153,7 +151,7 @@ export const fetchCurrentUser = createAsyncThunk<
     const response = await apiClient.get<{
       success: boolean;
       message: string;
-      data: AuthUser;
+      data: Donor;
     }>("/auth/me");
 
     if (!response.data.success) {

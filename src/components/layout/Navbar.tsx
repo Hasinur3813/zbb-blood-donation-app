@@ -28,11 +28,13 @@ type NavLink = {
   icon?: LucideIcon;
 };
 
+import type { StaticImport } from "next/dist/shared/lib/get-img-props";
+
 type SessionUser = {
-  name: string;
+  fullName: string;
   email: string;
   bloodGroup: BloodGroup;
-  avatar: string;
+  avatar: string | StaticImport;
   notifications: number;
 };
 
@@ -58,11 +60,13 @@ export function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
-  const sessionUser = useAppSelector((state) => state.auth.user);
+  const { user: sessionUser, isLoading } = useAppSelector(
+    (state) => state.auth,
+  );
 
   const currentUser: SessionUser | null = sessionUser
     ? {
-        name: sessionUser.name,
+        fullName: sessionUser.fullName,
         email: sessionUser.email,
         avatar: sessionUser.avatar,
         bloodGroup: sessionUser.bloodGroup,
@@ -105,7 +109,7 @@ export function Navbar() {
     pathname === href || (href !== "/" && pathname.startsWith(href + "/"));
 
   const initials =
-    currentUser?.name
+    currentUser?.fullName
       ?.split(" ")
       .map((n) => n[0])
       .join("")
@@ -165,7 +169,16 @@ export function Navbar() {
 
           {/* ── Right Side ── */}
           <div className="flex items-center gap-2 shrink-0">
-            {currentUser ? (
+            {isLoading ? (
+              /* Loading Skeleton */
+              <div className="flex items-center gap-3 animate-pulse">
+                <div className="w-8 h-8 rounded-full bg-gray-200" />
+                <div className="hidden lg:flex flex-col gap-1">
+                  <div className="w-16 h-2 bg-gray-200 rounded" />
+                  <div className="w-10 h-2 bg-gray-200 rounded" />
+                </div>
+              </div>
+            ) : currentUser ? (
               <>
                 {/* Notification Bell */}
                 <button className="relative hidden sm:flex items-center justify-center w-9 h-9 rounded-full hover:bg-rose-50 text-gray-500 hover:text-rose-600 transition-colors">
@@ -190,7 +203,7 @@ export function Navbar() {
                       {currentUser.avatar ? (
                         <Image
                           src={currentUser.avatar}
-                          alt={currentUser.name}
+                          alt={currentUser.fullName}
                           width={32}
                           height={32}
                           className="w-full h-full object-cover"
@@ -201,7 +214,7 @@ export function Navbar() {
                     </div>
                     <div className="hidden lg:block text-left">
                       <p className="text-xs font-semibold text-gray-800 leading-none">
-                        {currentUser.name.split(" ")[0]}
+                        {currentUser.fullName.split(" ")[0]}
                       </p>
                       <p className="text-[10px] text-rose-500 font-bold leading-none mt-0.5">
                         {currentUser.bloodGroup}
@@ -223,7 +236,7 @@ export function Navbar() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-gray-800">
-                              {currentUser.name}
+                              {currentUser.fullName}
                             </p>
                             <p className="text-xs text-gray-500">
                               {currentUser.email}
@@ -338,14 +351,23 @@ export function Navbar() {
           {/* Drawer */}
           <div className="absolute top-16 left-0 right-0 bg-white border-b border-rose-100 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto">
             {/* Logged-in user banner */}
-            {currentUser && (
+            {/* Logged-in user banner or Loading */}
+            {isLoading ? (
+              <div className="px-4 py-4 bg-linear-to-r from-rose-50 to-white border-b border-rose-100 flex items-center gap-3 animate-pulse">
+                <div className="w-11 h-11 rounded-full bg-gray-200 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-24" />
+                  <div className="h-2 bg-gray-200 rounded w-32" />
+                </div>
+              </div>
+            ) : currentUser ? (
               <div className="px-4 py-4 bg-linear-to-r from-rose-50 to-white border-b border-rose-100 flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full bg-rose-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
                   {initials}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-800 truncate">
-                    {currentUser.name}
+                    {currentUser.fullName}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     {currentUser.email}
@@ -363,7 +385,7 @@ export function Navbar() {
                   )}
                 </div>
               </div>
-            )}
+            ) : null}
 
             {/* Nav Links */}
             <nav className="px-3 py-3 space-y-0.5">
@@ -399,7 +421,7 @@ export function Navbar() {
             </nav>
 
             {/* Logged-in: profile links */}
-            {currentUser ? (
+            {!isLoading && currentUser && (
               <div className="border-t border-gray-100 px-3 py-3 space-y-0.5">
                 {[
                   { icon: User, label: "My Profile", href: "/profile" },
@@ -437,8 +459,10 @@ export function Navbar() {
                   Sign Out
                 </button>
               </div>
-            ) : (
-              /* Guest CTA */
+            )}
+
+            {/* Guest CTA */}
+            {!isLoading && !currentUser && (
               <div className="border-t border-gray-100 px-4 py-4 space-y-2">
                 <Link
                   href="/register-donor"
