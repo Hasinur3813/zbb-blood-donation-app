@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       "randomuser.me",
       "api.dicebear.com",
       "lh3.googleusercontent.com",
+      "via.placeholder.com",
     ],
   },
 };

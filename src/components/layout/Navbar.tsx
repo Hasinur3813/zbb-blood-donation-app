@@ -66,13 +66,15 @@ export function Navbar() {
 
   const currentUser: SessionUser | null = sessionUser
     ? {
-        fullName: sessionUser.fullName,
+        fullName: sessionUser?.fullName,
         email: sessionUser.email,
         avatar: sessionUser.avatar,
         bloodGroup: sessionUser.bloodGroup,
         notifications: 0,
       }
     : null;
+
+  console.log(currentUser);
 
   const navLinks = currentUser ? authNavLinks : publicNavLinks;
 

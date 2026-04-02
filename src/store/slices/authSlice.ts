@@ -151,7 +151,11 @@ export const fetchCurrentUser = createAsyncThunk<
     const response = await apiClient.get<{
       success: boolean;
       message: string;
-      data: Donor;
+      data: {
+        user: Donor;
+        accessToken: string;
+        refreshToken: string;
+      };
     }>("/auth/me");
 
     if (!response.data.success) {
@@ -160,7 +164,7 @@ export const fetchCurrentUser = createAsyncThunk<
       );
     }
 
-    return response.data.data;
+    return response.data.data.user;
   } catch (error) {
     return rejectWithValue(
       getErrorMessage(error, "Failed to fetch user info."),

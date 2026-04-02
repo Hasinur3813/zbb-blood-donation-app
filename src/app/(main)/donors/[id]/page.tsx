@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import type { ElementType } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -22,7 +24,9 @@ import {
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
-import { dummyDonor } from "@/data/dummyDonor";
+import { getDonorById } from "@/lib/donorApi";
+import { useAppSelector } from "@/store";
+import { Donor } from "@/types/donor";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -142,8 +146,57 @@ function StatCard({
 
 export default function DonorProfilePage() {
   const { id } = useParams<{ id: string }>();
-  // In production: fetch donor by `id` from your API
-  const donor = dummyDonor;
+  const donors = useAppSelector((state) => state.donors.donors);
+  const cachedDonor = useMemo(
+    () => donors.find((d) => d._id === id) ?? null,
+    [donors, id],
+  );
+
+  const {
+    data: remoteDonor,
+    isLoading,
+    isError,
+    error: queryError,
+  } = useQuery<Donor, Error>({
+    queryKey: ["donor", id],
+    queryFn: () => getDonorById(id!),
+    enabled: Boolean(id && !cachedDonor),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const donor: Donor | null =
+    (cachedDonor as Donor | null) ?? (remoteDonor as Donor | undefined) ?? null;
+  const loading = isLoading && !cachedDonor;
+  const error =
+    isError && !donor
+      ? queryError instanceof Error
+        ? queryError.message
+        : "Unable to load donor profile."
+      : null;
+
+  if (loading) {
+    return (
+      <main className="pt-24 pb-20 px-4 max-w-7xl mx-auto w-full">
+        <p className="text-center text-slate-500">Loading donor profile...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="pt-24 pb-20 px-4 max-w-7xl mx-auto w-full">
+        <p className="text-center text-rose-500">{error}</p>
+      </main>
+    );
+  }
+
+  if (!donor) {
+    return (
+      <main className="pt-24 pb-20 px-4 max-w-7xl mx-auto w-full">
+        <p className="text-center text-slate-500">Donor not found.</p>
+      </main>
+    );
+  }
 
   const lastDonationType =
     [...donor.donationHistory].sort(
@@ -157,6 +210,7 @@ export default function DonorProfilePage() {
   );
 
   const recentHistory = donor.donationHistory.slice(0, 4);
+  // console.log(recentHistory);
 
   const whatsappText = encodeURIComponent(
     `Hi ${donor.fullName}, I urgently need ${donor.bloodGroup} blood. Could you please help me?`,
@@ -164,10 +218,7 @@ export default function DonorProfilePage() {
   const whatsappUrl = `https://wa.me/${donor.phone.replace(/\D/g, "")}?text=${whatsappText}`;
 
   return (
-    <main
-      className="pt-24 pb-20 px-4 max-w-7xl mx-auto w-full"
-      data-donor-id={id}
-    >
+    <main className="py-10 px-4 container mx-auto w-full" data-donor-id={id}>
       {/* Back */}
       <Link
         href="/donors"
