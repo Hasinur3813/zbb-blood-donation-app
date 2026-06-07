@@ -17,6 +17,84 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { Donor } from "@/types/donor";
+import { useAppSelector } from "@/store";
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Cooldown days per donation type
+const COOLDOWN_DAYS: Record<string, number> = {
+  "Whole Blood": 56,
+  Platelets: 7,
+  Plasma: 28,
+  "Double Red Cells": 112,
+};
+
+// Inline eligibility — calculated directly from dummyDonor.lastDonatedAt
+function calcEligibility(
+  lastDonatedAt: string | null,
+  lastDonationType: string = "Whole Blood",
+  isAvailable: boolean = true,
+) {
+  if (!isAvailable) {
+    return {
+      canDonate: false,
+      status: "UNAVAILABLE",
+      daysSince: null,
+      daysLeft: null,
+      nextDate: null,
+      progress: 0,
+    };
+  }
+  if (!lastDonatedAt) {
+    return {
+      canDonate: true,
+      status: "NEVER_DONATED",
+      daysSince: null,
+      daysLeft: null,
+      nextDate: null,
+      progress: 100,
+    };
+  }
+
+  const cooldown = COOLDOWN_DAYS[lastDonationType] ?? 90;
+  const lastDate = new Date(lastDonatedAt);
+  const today = new Date();
+  const daysSince = Math.floor(
+    (today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  const daysLeft = cooldown - daysSince;
+  const nextDate = new Date(lastDate);
+  nextDate.setDate(nextDate.getDate() + cooldown);
+  const progress = Math.min(100, Math.round((daysSince / cooldown) * 100));
+
+  if (daysLeft <= 0) {
+    return {
+      canDonate: true,
+      status: "ELIGIBLE",
+      daysSince,
+      daysLeft: 0,
+      nextDate: null,
+      progress: 100,
+    };
+  }
+
+  return {
+    canDonate: false,
+    status: "COOLING",
+    daysSince,
+    daysLeft,
+    nextDate,
+    progress,
+  };
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 type FormData = {
   location: string;
@@ -29,40 +107,33 @@ type Props = {
 
 export default function DonorCard({ donor }: Props) {
   const [open, setOpen] = useState(false);
-
-  // 🔥 Fake current user (replace later with auth)
-  const currentUser = {
-    name: "Hasinur",
-    phone: "0173061332",
-    city: "Pabna",
-  };
+  const { user: currentUser } = useAppSelector((state) => state.auth);
 
   // 🔥 Eligibility logic
-  const lastDonationDate = donor.lastDonatedAt
-    ? new Date(donor.lastDonatedAt)
-    : null;
-  const today = new Date();
+  const lastDonationType =
+    donor.donationHistory.length > 0
+      ? donor.donationHistory.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        )[0].type
+      : "Whole Blood";
 
-  const diffInDays = lastDonationDate
-    ? (today.getTime() - lastDonationDate.getTime()) / (1000 * 60 * 60 * 24)
-    : 90; // If no last donation, assume eligible
-
-  const isAvailable = donor.isAvailable;
-  const progress = Math.min((diffInDays / 90) * 100, 100);
-
-  const nextEligibleDate = new Date(donor.nextEligibleAt);
+  const eligibility = calcEligibility(
+    donor.lastDonatedAt,
+    lastDonationType,
+    donor.isAvailable,
+  );
 
   // 🔥 React Hook Form
   const { register, handleSubmit } = useForm<FormData>({
     defaultValues: {
-      location: currentUser.city,
+      location: currentUser?.city,
       message: `🩸Blood Request
 Hello ${donor.fullName},
 
-I am ${currentUser.name} from zbb.com.
+I am ${currentUser?.fullName} from zbb.com.
 I need ${donor.bloodGroup} blood.
 
-Location: ${currentUser.city}
+Location: ${currentUser?.city}
 
 Please let me know if you can help🙏`,
     },
@@ -72,7 +143,7 @@ Please let me know if you can help🙏`,
     const finalMessage = `${data.message}
 
 📍 Location: ${data.location}
-📞 Contact: ${currentUser.phone}`;
+📞 Contact: ${currentUser?.phone}`;
 
     const url = `https://wa.me/${donor.phone}?text=${encodeURIComponent(
       finalMessage,
@@ -170,35 +241,49 @@ Please let me know if you can help🙏`,
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
               Eligibility
             </span>
-            {isAvailable ? (
-              <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+            <span
+              className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                eligibility.canDonate
+                  ? "text-emerald-600 bg-emerald-50"
+                  : eligibility.status === "UNAVAILABLE"
+                    ? "text-gray-600 bg-gray-50"
+                    : "text-amber-600 bg-amber-50"
+              }`}
+            >
+              {eligibility.canDonate ? (
                 <CheckCircle2 className="w-3 h-3" />
-                Ready to Donate
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
+              ) : (
                 <Timer className="w-3 h-3" />
-                Cooling Period
-              </span>
-            )}
+              )}
+              {eligibility.status === "ELIGIBLE" && "Ready to Donate"}
+              {eligibility.status === "NEVER_DONATED" && "First-Time Donor"}
+              {eligibility.status === "COOLING" && "Cooling Period"}
+              {eligibility.status === "UNAVAILABLE" && "Unavailable"}
+            </span>
           </div>
 
           {/* Progress bar */}
           <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${
-                isAvailable ? "bg-emerald-500" : "bg-amber-400"
+                eligibility.canDonate ? "bg-emerald-500" : "bg-amber-400"
               }`}
-              style={{ width: `${progress.toFixed()}%` }}
+              style={{ width: `${eligibility.progress}%` }}
             />
           </div>
 
           <p className="text-[10px] text-slate-400 italic">
-            {isAvailable
-              ? lastDonationDate
-                ? `Last donated ${Math.floor(diffInDays)} days ago`
-                : "No previous donations"
-              : `Next eligible on ${nextEligibleDate.toLocaleDateString()}`}
+            {eligibility.status === "ELIGIBLE" &&
+              `Last donated ${eligibility.daysSince} days ago`}
+            {eligibility.status === "NEVER_DONATED" && "No previous donations"}
+            {eligibility.status === "COOLING" &&
+              `Next eligible on ${
+                eligibility.nextDate
+                  ? formatDate(eligibility.nextDate.toISOString())
+                  : "—"
+              }`}
+            {eligibility.status === "UNAVAILABLE" &&
+              "This donor has marked themselves as unavailable"}
           </p>
         </div>
 

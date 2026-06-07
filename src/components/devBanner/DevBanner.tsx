@@ -1,23 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FlaskConical, X, ShieldAlert } from "lucide-react";
 
 export function DevBanner() {
   const [open, setOpen] = useState(true);
 
   // Show once per session
-  //   useEffect(() => {
-  //     // Only run this code if window is available (i.e., client-side)
-  //     const dismissed =
-  //       typeof window !== "undefined"
-  //         ? sessionStorage.getItem("dev-modal-dismissed")
-  //         : "true";
-  //     if (!dismissed) {
-  //       // Use a microtask to escape initial effect trigger and avoid cascading renders
-  //       Promise.resolve().then(() => setOpen(true));
-  //     }
-  //   }, []);
+  useEffect(() => {
+    // Only run this code if window is available (i.e., client-side)
+    const dismissed =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("dev-modal-dismissed")
+        : "true";
+    if (!dismissed) {
+      // Use a microtask to escape initial effect trigger and avoid cascading renders
+      Promise.resolve().then(() => setOpen(true));
+    }
+  }, []);
 
   const handleClose = () => {
     // sessionStorage.setItem("dev-modal-dismissed", "true");
