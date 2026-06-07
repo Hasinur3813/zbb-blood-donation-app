@@ -1,0 +1,32 @@
+export const URGENCY_OPTIONS = [
+  {
+    value: "normal",
+    label: "Normal",
+    desc: "Within 72 hours",
+    bg: "bg-slate-50",
+    activeBg: "bg-slate-100",
+    ring: "ring-slate-300",
+    dot: "bg-slate-400",
+    text: "text-slate-600",
+  },
+  {
+    value: "urgent",
+    label: "Urgent",
+    desc: "Within 24 hours",
+    bg: "bg-amber-50",
+    activeBg: "bg-amber-100",
+    ring: "ring-amber-400",
+    dot: "bg-amber-500",
+    text: "text-amber-700",
+  },
+  {
+    value: "emergency",
+    label: "Emergency",
+    desc: "Immediate — life at risk",
+    bg: "bg-red-50",
+    activeBg: "bg-red-100",
+    ring: "ring-red-500",
+    dot: "bg-red-500",
+    text: "text-red-700",
+  },
+] as const;

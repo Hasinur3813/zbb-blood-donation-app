@@ -2,13 +2,6 @@
 
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import type {
-  Control,
-  FieldErrors,
-  UseFormHandleSubmit,
-  UseFormRegister,
-  UseFormSetValue,
-} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CheckCircle2,
@@ -28,9 +21,10 @@ import { StepHospital } from "./components/StepHospital";
 import { StepUrgency } from "./components/StepUrgency";
 import { StepContact } from "./components/StepContact";
 import { StepProgress } from "./components/StepProgress";
+import { StepNavigation } from "./components/StepNavigation";
 import DonorMapSection from "./components/donorMapSection";
 import { fullSchema } from "./constants/schemas";
-import { STEPS } from "./constants/steps";
+import { STEPS, STEP_FIELDS } from "./constants/steps";
 import { useStepNavigation } from "./hooks/useStepNavigation";
 import { FormValues, UrgencyLevel } from "./types/form";
 
@@ -60,7 +54,7 @@ export default function RequestBloodPage() {
     mode: "onChange",
   });
 
-  const { goNext, goBack, progress } = useStepNavigation(
+  const { goNext, goBack, progress, isLastStep } = useStepNavigation(
     step,
     setStep,
     trigger,
@@ -76,7 +70,7 @@ export default function RequestBloodPage() {
       } else {
         toast.error(resultAction.payload || "Failed to submit request");
       }
-    } catch {
+    } catch (error) {
       toast.error("An unexpected error occurred");
     }
   };
@@ -274,22 +268,6 @@ function EmergencyHotline() {
 /**
  * Form Screen Component
  */
-type FormScreenProps = {
-  step: number;
-  progress: number;
-  urgency: UrgencyLevel;
-  urgencyGradient: string;
-  register: UseFormRegister<FormValues>;
-  errors: FieldErrors<FormValues>;
-  control: Control<FormValues>;
-  setValue: UseFormSetValue<FormValues>;
-  handleSubmit: UseFormHandleSubmit<FormValues>;
-  onSubmit: (data: FormValues) => Promise<void>;
-  onNext: () => Promise<void>;
-  onPrev: () => void;
-  isLoading: boolean;
-};
-
 function FormScreen({
   step,
   progress,
@@ -304,7 +282,7 @@ function FormScreen({
   onNext,
   onPrev,
   isLoading,
-}: FormScreenProps) {
+}: any) {
   return (
     <>
       {/* Header */}
