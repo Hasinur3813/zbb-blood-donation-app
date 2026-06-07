@@ -74,7 +74,7 @@ export function Navbar() {
       }
     : null;
 
-  console.log(currentUser);
+
 
   const navLinks = currentUser ? authNavLinks : publicNavLinks;
 

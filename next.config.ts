@@ -39,12 +39,12 @@ const nextConfig: NextConfig = {
   // keep distDir default to `.next` so Next writes into our symlink (when created)
   distDir: ".next",
   images: {
-    domains: [
-      "ui-avatars.com",
-      "randomuser.me",
-      "api.dicebear.com",
-      "lh3.googleusercontent.com",
-      "via.placeholder.com",
+    remotePatterns: [
+      { protocol: "https", hostname: "ui-avatars.com" },
+      { protocol: "https", hostname: "randomuser.me" },
+      { protocol: "https", hostname: "api.dicebear.com" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      { protocol: "https", hostname: "via.placeholder.com" },
     ],
   },
 };
