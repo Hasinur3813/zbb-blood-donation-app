@@ -136,7 +136,7 @@ export const getDonors = async (
       success: boolean;
       message: string;
       data: DonorsResponse;
-    }>(`/users/nearby-donors?${params.toString()}`);
+    }>(`/donors/nearby-donors?${params.toString()}`);
 
     if (!response.data.success) {
       throw new Error(response.data.message || "Failed to fetch donors");

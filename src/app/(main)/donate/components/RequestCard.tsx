@@ -85,7 +85,7 @@ export default function RequestCard({
 
         {/* Requester row */}
         <Link
-          href={`/donors/${request.requesterId._id}`}
+          href={`/donors/${request.requesterId?._id}`}
           // onClick={onViewDetails}
           title="Show Requester Info."
           className="mt-2 flex items-center cursor-pointer w-full mb-4 gap-3 p-3 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 transition-colors"

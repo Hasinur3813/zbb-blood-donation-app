@@ -56,7 +56,11 @@ export default function RequestBloodPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(fullSchema),
-    defaultValues: { urgencyLevel: "urgent", agreedToGuidelines: false },
+    defaultValues: {
+      urgencyLevel: "urgent",
+      agreedToGuidelines: false,
+      requesterName: "Hasinur",
+    },
     mode: "onChange",
   });
 

@@ -11,6 +11,7 @@ import { FormValues } from "@/app/(main)/request-blood/types/form";
 import { Field } from "@/app/(main)/request-blood/ui/Field";
 import { inputCls } from "@/app/(main)/request-blood/ui/input-styles";
 import { RELATIONS } from "@/app/(main)/request-blood/constants/steps";
+import { useAppSelector } from "@/store/store";
 
 interface StepContactProps {
   register: UseFormRegister<FormValues>;
@@ -24,6 +25,8 @@ export function StepContact({ register, errors, control }: StepContactProps) {
     name: "agreedToGuidelines",
   });
 
+  const { user } = useAppSelector((state) => state.auth);
+
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -32,7 +35,9 @@ export function StepContact({ register, errors, control }: StepContactProps) {
             <input
               {...register("requesterName")}
               className={`${inputCls(errors.requesterName)} pl-10`}
-              placeholder="e.g. Rahima Begum"
+              disabled
+              //   value={user?.fullName}
+              placeholder={user?.fullName}
             />
             <User className="absolute left-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
